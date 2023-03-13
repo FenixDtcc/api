@@ -28,6 +28,24 @@ namespace QuantoDemoraApi.Data
 
         protected override void OnModelCreating(ModelBuilder mb)
         {
+            mb.Entity<Associado>().HasData
+        (
+            new Associado()
+            {
+                IdAssociado = 1,
+                NomeAssociado = "Admin",
+                SobrenomeAssociado = "Admin",
+                Cpf = "123.456.789-10",
+                DtNascimento = DateTime.Parse("01/01/2000"),
+                Sexo = 'M',
+                DddCelular = "11",
+                NroCelular = "123456789",
+                Email = "quantodemora@gmail.com"
+            }
+        );
+
+
+
             var user = new Usuario();
             Criptografia.CriarPasswordHash("123456", out byte[] hash, out byte[] salt);
             user.IdUsuario = 1;

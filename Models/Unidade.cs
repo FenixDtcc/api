@@ -10,6 +10,5 @@ namespace QuantoDemoraApi.Models
         public int IdUnidade { get; set; }
         public string DsUnidade { get; set; }
         public Hospital Hospital { get; set; }
-        public int IdHospital { get; set; }
     }
 }
