@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\ADS\\TCC\\API\\QuantoDemoraApi.csproj": {}
+    "C:\\DEV\\TCC\\API\\QuantoDemoraApi.csproj": {}
   },
   "projects": {
-    "C:\\ADS\\TCC\\API\\QuantoDemoraApi.csproj": {
+    "C:\\DEV\\TCC\\API\\QuantoDemoraApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\ADS\\TCC\\API\\QuantoDemoraApi.csproj",
+        "projectUniqueName": "C:\\DEV\\TCC\\API\\QuantoDemoraApi.csproj",
         "projectName": "QuantoDemoraApi",
-        "projectPath": "C:\\ADS\\TCC\\API\\QuantoDemoraApi.csproj",
+        "projectPath": "C:\\DEV\\TCC\\API\\QuantoDemoraApi.csproj",
         "packagesPath": "C:\\Users\\iagom\\.nuget\\packages\\",
-        "outputPath": "C:\\ADS\\TCC\\API\\obj\\",
+        "outputPath": "C:\\DEV\\TCC\\API\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

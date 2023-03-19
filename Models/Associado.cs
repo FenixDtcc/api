@@ -17,8 +17,5 @@ namespace QuantoDemoraApi.Models
         public string DddCelular { get; set; }
         public string NroCelular { get; set; }
         public string Email { get; set; }
-
-        [JsonIgnore]
-        public Usuario Usuario { get; set; }
     }
 }

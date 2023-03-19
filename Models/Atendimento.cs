@@ -18,8 +18,6 @@ namespace QuantoDemoraApi.Models
         public IdentificacaoAtendimento IdentificacaoAtendimento { get; set; }
         public int IdIdentificacaoAtendimento { get; set; }
         public IdentificacaoAtendimentoEnum IdentificacaoAtendimentoEnum { get; set; }
-        public Unidade Unidade { get; set; }
-        public int IdUnidade { get; set; }
         public Associado Associado { get; set; }
         public int IdAssociado { get; set; }
         public Hospital Hospital { get; set; }
