@@ -10,7 +10,6 @@ namespace QuantoDemoraApi.Data
         {
 
         }
-
         public DbSet<Associado> Associados { get; set; }
         public DbSet<Atendimento> Atendimentos { get; set; }
         public DbSet<AtendimentoEvento> AtendimentosEventos { get; set; }
@@ -18,12 +17,11 @@ namespace QuantoDemoraApi.Data
         public DbSet<Especialidade> Especialidades { get; set; }
         public DbSet<Evento> Eventos { get; set; }
         public DbSet<Hospital> Hospitais { get; set; }
+        public DbSet<HospitalEspecialidade> HospitalEspecialidades { get; set; }
         public DbSet<IdentificacaoAtendimento> IdentificacaoAtendimentos { get; set; }
         public DbSet<Logradouro> Logradouros { get; set; }
         public DbSet<StatusAtendimento> StatusAtendimentos { get; set; }
         public DbSet<TipoContato> TiposContatos { get; set; }
-        public DbSet<Unidade> Unidades { get; set; }
-        public DbSet<UnidadeEspecialidade> UnidadesEspecialidades { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
 
     }
