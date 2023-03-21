@@ -11,10 +11,10 @@ namespace QuantoDemoraApi.Controllers
 {
     [ApiController]
     [Route("[Controller]")]
-    public class TiposContatosController : ControllerBase
+    public class TiposContatoController : ControllerBase
     {
         private readonly DataContext _context;
-        public TiposContatosController(DataContext context)
+        public TiposContatoController(DataContext context)
         {
             _context = context;
         }
