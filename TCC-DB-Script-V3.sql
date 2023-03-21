@@ -95,7 +95,7 @@ idContato INT NOT NULL,
 idTipoContato INT NOT NULL,
 dsContato VARCHAR(50) NOT NULL,
 inContato VARCHAR(100) NOT NULL,
-  
+
 CONSTRAINT Contatos_PK PRIMARY KEY (idHospital, idContato, idTipoContato),
 CONSTRAINT Contatos_FK1 FOREIGN KEY (idHospital) REFERENCES Hospital (idHospital),
 CONSTRAINT Contatos_FK2 FOREIGN KEY (idTipoContato) REFERENCES TiposContato (idTipoContato),
@@ -191,7 +191,7 @@ Sexo CHAR(1) NOT NULL,
 DDDCelular CHAR(2) NOT NULL,
 NroCelular CHAR(9) NOT NULL,
 Email VARCHAR(50) NOT NULL,
-  
+
 CONSTRAINT Associado_PK PRIMARY KEY (idAssociado)
 )
 
