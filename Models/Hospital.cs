@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using QuantoDemoraApi.Models.Enums;
@@ -8,6 +10,7 @@ namespace QuantoDemoraApi.Models
 {
     public class Hospital
     {
+        [Key]
         public int IdHospital { get; set; }
         public string Cnpj { get; set; }
         public string RazaoSocial { get; set; }

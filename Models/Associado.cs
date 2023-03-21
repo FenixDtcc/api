@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Text.Json.Serialization;
@@ -8,6 +10,7 @@ namespace QuantoDemoraApi.Models
 {
     public class Associado
     {
+        [Key]
         public int IdAssociado { get; set; }
         public string NomeAssociado { get; set; }
         public string SobrenomeAssociado { get; set; }

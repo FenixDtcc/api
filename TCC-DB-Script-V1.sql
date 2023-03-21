@@ -23,13 +23,13 @@ INSERT INTO Logradouros VALUES (2,'Alameda');
 INSERT INTO Logradouros VALUES (3,'Area');
 INSERT INTO Logradouros VALUES (4,'Avenida');
 INSERT INTO Logradouros VALUES (5,'Campo');
-INSERT INTO Logradouros VALUES (6,'Chácara');
-INSERT INTO Logradouros VALUES (7,'Colônia');
-INSERT INTO Logradouros VALUES (8,'Condomínio');
+INSERT INTO Logradouros VALUES (6,'Chï¿½cara');
+INSERT INTO Logradouros VALUES (7,'Colï¿½nia');
+INSERT INTO Logradouros VALUES (8,'Condomï¿½nio');
 INSERT INTO Logradouros VALUES (9,'Conjunto');
 INSERT INTO Logradouros VALUES (10,'Distrito');
 INSERT INTO Logradouros VALUES (11,'Esplanada');
-INSERT INTO Logradouros VALUES (12,'Estação');
+INSERT INTO Logradouros VALUES (12,'Estaï¿½ï¿½o');
 INSERT INTO Logradouros VALUES (13,'Estrada');
 INSERT INTO Logradouros VALUES (14,'Favela');
 INSERT INTO Logradouros VALUES (15,'Fazenda');
@@ -41,18 +41,18 @@ INSERT INTO Logradouros VALUES (20,'Lagoa');
 INSERT INTO Logradouros VALUES (21,'Largo');
 INSERT INTO Logradouros VALUES (22,'Loteamento');
 INSERT INTO Logradouros VALUES (23,'Morro');
-INSERT INTO Logradouros VALUES (24,'Núcleo');
+INSERT INTO Logradouros VALUES (24,'Nï¿½cleo');
 INSERT INTO Logradouros VALUES (25,'Parque');
 INSERT INTO Logradouros VALUES (26,'Passarela');
-INSERT INTO Logradouros VALUES (27,'Pátio');
-INSERT INTO Logradouros VALUES (28,'Praça');
+INSERT INTO Logradouros VALUES (27,'Pï¿½tio');
+INSERT INTO Logradouros VALUES (28,'Praï¿½a');
 INSERT INTO Logradouros VALUES (29,'Quadra');
 INSERT INTO Logradouros VALUES (30,'Recanto');
 INSERT INTO Logradouros VALUES (31,'Residencial');
 INSERT INTO Logradouros VALUES (32,'Rodovia');
 INSERT INTO Logradouros VALUES (33,'Rua');
 INSERT INTO Logradouros VALUES (34,'Setor');
-INSERT INTO Logradouros VALUES (35,'Sítio');
+INSERT INTO Logradouros VALUES (35,'Sï¿½tio');
 INSERT INTO Logradouros VALUES (36,'Travessa');
 INSERT INTO Logradouros VALUES (37,'Trecho');
 INSERT INTO Logradouros VALUES (38,'Trevo');
@@ -89,6 +89,30 @@ CONSTRAINT Hospital_FK1 FOREIGN KEY (idLogradouro) REFERENCES Logradouros (idLog
 
 GO
 
+CREATE TABLE Unidades (
+idUnidade INT NOT NULL,
+idHospital INT NOT NULL,
+dsUnidade VARCHAR(25) NOT NULL,
+idLogradouro INT NOT NULL,
+Endereco VARCHAR(50) NOT NULL,
+Numero VARCHAR(10) NOT NULL,
+Complemento VARCHAR(15) NOT NULL,
+Bairro VARCHAR(25) NOT NULL,
+Cidade VARCHAR(25) NOT NULL,
+UF CHAR(2) NOT NULL,
+CEP CHAr(9) NOT NULL,
+Latitude FLOAT NULL,
+Longitude FLOAT NULL,
+
+CONSTRAINT Unidades_PK PRIMARY KEY (idHospital, idUnidade),
+CONSTRAINT Unidade_FK1 FOREIGN KEY (idHospital) REFERENCES Hospital (idHospital),
+CONSTRAINT Unidade_FK2 FOREIGN KEY (idLogradouro) REFERENCES Logradouros (idLogradouro)
+)
+
+-- CRIAR INSERTS DE UNIDADES PARA SIMULAR
+
+GO
+
 CREATE TABLE Contatos (
 idHospital INT NOT NULL,
 idContato INT NOT NULL,
@@ -118,36 +142,36 @@ INSERT INTO Especialidade VALUES (3,'Anestesiologista');
 INSERT INTO Especialidade VALUES (4,'Angiologia');
 INSERT INTO Especialidade VALUES (5,'Cardiologia');
 INSERT INTO Especialidade VALUES (6,'Cirurgia Cardiovascular');
-INSERT INTO Especialidade VALUES (7,'Cirurgia de Mão');
-INSERT INTO Especialidade VALUES (8,'Cirurgia de Cabeça e Pescoço');
+INSERT INTO Especialidade VALUES (7,'Cirurgia de Mï¿½o');
+INSERT INTO Especialidade VALUES (8,'Cirurgia de Cabeï¿½a e Pescoï¿½o');
 INSERT INTO Especialidade VALUES (9,'Cirurgia do Aparelho Digestivo');
 INSERT INTO Especialidade VALUES (10,'Cirurgia Geral');
-INSERT INTO Especialidade VALUES (11,'Cirurgia Oncológica');
-INSERT INTO Especialidade VALUES (12,'Cirurgia Pediátrica');
-INSERT INTO Especialidade VALUES (13,'Cirurgia Plástica');
-INSERT INTO Especialidade VALUES (14,'Cirurgia Torácica');
+INSERT INTO Especialidade VALUES (11,'Cirurgia Oncolï¿½gica');
+INSERT INTO Especialidade VALUES (12,'Cirurgia Pediï¿½trica');
+INSERT INTO Especialidade VALUES (13,'Cirurgia Plï¿½stica');
+INSERT INTO Especialidade VALUES (14,'Cirurgia Torï¿½cica');
 INSERT INTO Especialidade VALUES (15,'Cirurgia Vascular');
-INSERT INTO Especialidade VALUES (16,'Clínica Médica');
+INSERT INTO Especialidade VALUES (16,'Clï¿½nica Mï¿½dica');
 INSERT INTO Especialidade VALUES (17,'Coloproctologia');
 INSERT INTO Especialidade VALUES (18,'Dermatologia');
 INSERT INTO Especialidade VALUES (19,'Endocrinologia e Metabologia');
 INSERT INTO Especialidade VALUES (20,'Endoscopia');
 INSERT INTO Especialidade VALUES (21,'Gastroenterologia');
-INSERT INTO Especialidade VALUES (22,'Genética Médica');
+INSERT INTO Especialidade VALUES (22,'Genï¿½tica Mï¿½dica');
 INSERT INTO Especialidade VALUES (23,'Geriatria');
-INSERT INTO Especialidade VALUES (24,'Ginecologia e Obstetrícia');
+INSERT INTO Especialidade VALUES (24,'Ginecologia e Obstetrï¿½cia');
 INSERT INTO Especialidade VALUES (25,'Hematologia e Hemoterapia');
 INSERT INTO Especialidade VALUES (26,'Homeopatia');
 INSERT INTO Especialidade VALUES (27,'Infectologia');
 INSERT INTO Especialidade VALUES (28,'Mastologia');
-INSERT INTO Especialidade VALUES (29,'Medicina de Emergência');
-INSERT INTO Especialidade VALUES (30,'Medicina de Família e Comunidade');
+INSERT INTO Especialidade VALUES (29,'Medicina de Emergï¿½ncia');
+INSERT INTO Especialidade VALUES (30,'Medicina de Famï¿½lia e Comunidade');
 INSERT INTO Especialidade VALUES (31,'Medicina do Trabalho');
-INSERT INTO Especialidade VALUES (32,'Medicina de Tráfego');
+INSERT INTO Especialidade VALUES (32,'Medicina de Trï¿½fego');
 INSERT INTO Especialidade VALUES (33,'Medicina Esportiva');
-INSERT INTO Especialidade VALUES (34,'Medicina Física e Reabilitação');
+INSERT INTO Especialidade VALUES (34,'Medicina Fï¿½sica e Reabilitaï¿½ï¿½o');
 INSERT INTO Especialidade VALUES (35,'Medicina Intensiva');
-INSERT INTO Especialidade VALUES (36,'Medicina Legal e Perícia Médica');
+INSERT INTO Especialidade VALUES (36,'Medicina Legal e Perï¿½cia Mï¿½dica');
 INSERT INTO Especialidade VALUES (37,'Medicina Nuclear');
 INSERT INTO Especialidade VALUES (38,'Medicina Preventiva e Social');
 INSERT INTO Especialidade VALUES (39,'Nefrologia');
@@ -155,18 +179,31 @@ INSERT INTO Especialidade VALUES (40,'Neurocirurgia');
 INSERT INTO Especialidade VALUES (41,'Neurologia');
 INSERT INTO Especialidade VALUES (42,'Nutrologia');
 INSERT INTO Especialidade VALUES (43,'Oftalmologia');
-INSERT INTO Especialidade VALUES (44,'Oncologia Clínica');
+INSERT INTO Especialidade VALUES (44,'Oncologia Clï¿½nica');
 INSERT INTO Especialidade VALUES (45,'Ortopedia e Traumatologia');
 INSERT INTO Especialidade VALUES (46,'Otorrinolaringologia');
 INSERT INTO Especialidade VALUES (47,'Patologia');
-INSERT INTO Especialidade VALUES (48,'Patologia Clínica/Medicina Laboratorial');
+INSERT INTO Especialidade VALUES (48,'Patologia Clï¿½nica/Medicina Laboratorial');
 INSERT INTO Especialidade VALUES (49,'Pediatria');
 INSERT INTO Especialidade VALUES (50,'Pneumologia');
 INSERT INTO Especialidade VALUES (51,'Psiquiatria');
-INSERT INTO Especialidade VALUES (52,'Radiologia e Diagnóstico por Imagem');
+INSERT INTO Especialidade VALUES (52,'Radiologia e Diagnï¿½stico por Imagem');
 INSERT INTO Especialidade VALUES (53,'Radioterapia');
 INSERT INTO Especialidade VALUES (54,'Reumatologia');
 INSERT INTO Especialidade VALUES (55,'Urologia');
+
+GO
+
+CREATE TABLE UnidadeEspecialidades (
+idHospital INT NOT NULL,
+idUnidade INT NOT NULL,
+idEspecialidade INT NOT NULL,
+
+CONSTRAINT UnidadeEspecialidades_PK PRIMARY KEY (idHospital, idUnidade, idEspecialidade),
+CONSTRAINT UnidadeEspecialidades_FK1 FOREIGN KEY (idHospital) REFERENCES Hospital (idHospital),
+CONSTRAINT UnidadeEspecialidades_FK2 FOREIGN KEY (idUnidade) REFERENCES Unidades (idUnidade),
+CONSTRAINT UnidadeEspecialidades_FK3 FOREIGN KEY (idEspecialidade) REFERENCES Especialidade (idEspecialidade)
+)
 
 GO
 
@@ -196,11 +233,11 @@ dfIdentificacaoAtendimento VARCHAR(100) NULL,
 CONSTRAINT IdentificacaoAtendimento_PK PRIMARY KEY (idIdentificacaoAtendimento)
 )
 
-INSERT INTO IdentificacaoAtendimento VALUES (1,'Azul','Não Urgente, sem risco imediato de agravo à saúde. Atendimento em até 240 min.');   
-INSERT INTO IdentificacaoAtendimento VALUES (2,'Verde','Pouco Urgente, baixo risco de agravo imediato à saúde. Atendimento em até 120 min.');  
-INSERT INTO IdentificacaoAtendimento VALUES (3,'Amarelo','Urgente, condições que podem se agravar sem atendimento. Atendimento em até 60 min.'); 
-INSERT INTO IdentificacaoAtendimento VALUES (4,'Laranja','Muito Urgente, risco significativo de piora do quadro. Atendimento em até 10 min.');  
-INSERT INTO IdentificacaoAtendimento VALUES (5,'Vermelho','Emergência, risco imediato de perder a vida. Atendimento imediato.');
+INSERT INTO IdentificacaoAtendimento VALUES (1,'Azul','Nï¿½o Urgente, sem risco imediato de agravo ï¿½ saï¿½de. Atendimento em atï¿½ 240 min.');   
+INSERT INTO IdentificacaoAtendimento VALUES (2,'Verde','Pouco Urgente, baixo risco de agravo imediato ï¿½ saï¿½de. Atendimento em atï¿½ 120 min.');  
+INSERT INTO IdentificacaoAtendimento VALUES (3,'Amarelo','Urgente, condiï¿½ï¿½es que podem se agravar sem atendimento. Atendimento em atï¿½ 60 min.'); 
+INSERT INTO IdentificacaoAtendimento VALUES (4,'Laranja','Muito Urgente, risco significativo de piora do quadro. Atendimento em atï¿½ 10 min.');  
+INSERT INTO IdentificacaoAtendimento VALUES (5,'Vermelho','Emergï¿½ncia, risco imediato de perder a vida. Atendimento imediato.');
 
 GO
 
@@ -230,18 +267,19 @@ CONSTRAINT Evento_PK PRIMARY KEY (idEvento)
 )
 
 INSERT INTO Evento VALUES (1,'Senha para Atendimento');
-INSERT INTO Evento VALUES (2,'Triagem Diagnóstica');
+INSERT INTO Evento VALUES (2,'Triagem Diagnï¿½stica');
 INSERT INTO Evento VALUES (3,'Registro do Paciente'); 
-INSERT INTO Evento VALUES (4,'Consulta Médica');
-INSERT INTO Evento VALUES (5,'Internação'); 
+INSERT INTO Evento VALUES (4,'Consulta Mï¿½dica');
+INSERT INTO Evento VALUES (5,'Internaï¿½ï¿½o'); 
 INSERT INTO Evento VALUES (6,'Exames Ambulatoriais'); 
-INSERT INTO Evento VALUES (7,'Exames Clínicos'); 
+INSERT INTO Evento VALUES (7,'Exames Clï¿½nicos'); 
 
 CREATE TABLE Atendimentos (
 idAtendimento INT NOT NULL,
 idEspecialidade INT NOT NULL,
 idStatusAtendimento INT NOT NULL,
 idIdentificacaoAtendimento INT NOT NULL,
+idUnidade INT NOT NULL,
 idHospital INT NOT NULL,
 idAssociado INT NOT NULL,
 dtAtendimento DATETIME NOT NULL,
@@ -250,6 +288,7 @@ CONSTRAINT Atendimentos_PK PRIMARY KEY (idAtendimento),
 CONSTRAINT Atendimentos_FK1 FOREIGN KEY (idEspecialidade) REFERENCES Especialidade (idEspecialidade),
 CONSTRAINT Atendimentos_FK2 FOREIGN KEY (idStatusAtendimento) REFERENCES StatusAtendimento (idStatusAtendimento),
 CONSTRAINT Atendimentos_FK3 FOREIGN KEY (idIdentificacaoAtendimento) REFERENCES IdentificacaoAtendimento (idIdentificacaoAtendimento),
+CONSTRAINT Atendimentos_FK4 FOREIGN KEY (idUnidade) REFERENCES Unidades (idUnidade),
 CONSTRAINT Atendimentos_FK5 FOREIGN KEY (idHospital) REFERENCES Hospital (idHospital),
 CONSTRAINT Atendimentos_FK6 FOREIGN KEY (idAssociado) REFERENCES Associado (idAssociado)
 )
@@ -272,7 +311,7 @@ CONSTRAINT AtendimentosEventos_FK2 FOREIGN KEY (idEvento) REFERENCES Evento (idE
 GO
 
 CREATE TABLE Usuario (
-idUsuario INT NOT NULL IDENTITY,
+idUsuario INT NOT NULL IDENTITY (1,1),
 idAssociado INT NOT NULL,
 NomeUsuario VARCHAR(20) NOT NULL,
 CPF CHAR(14) NULL,
@@ -280,8 +319,8 @@ Email VARCHAR(50) NOT NULL,
 DtAcesso DATETIME NULL,
 Latitude FLOAT NULL,
 Longitude FLOAT NULL,
-PasswordHash VARCHAR NULL,
-PasswordSalt VARCHAR NULL,
+PasswordHash VARCHAR NOT NULL,
+PasswordSalt VARCHAR NOT NULL,
 TpUsuario VARCHAR(5) NOT NULL,
 DtCadastro DATETIME NOT NULL,
 

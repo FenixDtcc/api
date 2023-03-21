@@ -21,7 +21,7 @@ namespace QuantoDemoraApi.Data
         public DbSet<IdentificacaoAtendimento> IdentificacaoAtendimentos { get; set; }
         public DbSet<Logradouro> Logradouros { get; set; }
         public DbSet<StatusAtendimento> StatusAtendimentos { get; set; }
-        public DbSet<TipoContato> TiposContatos { get; set; }
+        public DbSet<TipoContato> TiposContato { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
 
     }

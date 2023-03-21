@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using QuantoDemoraApi.Models.Enums;
@@ -8,6 +10,7 @@ namespace QuantoDemoraApi.Models
 {
     public class Atendimento
     {
+        [Key]
         public int IdAtendimento { get; set; }
         public Especialidade Especialidade { get; set; }
         public int IdEspecialidade { get; set; }
