@@ -19,13 +19,28 @@ namespace QuantoDemoraApi.Controllers
             _context = context;
         }
 
-        [HttpGet("GetAll")]
+        [HttpGet("Listar")]
         public async Task<IActionResult> Get()
         {
             try
             {
                 List<Especialidade> lista = await _context.Especialidades.ToListAsync();
                 return Ok(lista);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("{especialidadeId}")]
+        public async Task<IActionResult> GetEspecialidade(int especialidadeId)
+        {
+            try
+            {
+                Especialidade especialidade = await _context.Especialidades
+                    .FirstOrDefaultAsync(x => x.IdEspecialidade == especialidadeId);
+                return Ok(especialidade);
             }
             catch (Exception ex)
             {

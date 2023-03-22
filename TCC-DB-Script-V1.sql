@@ -201,7 +201,7 @@ idEspecialidade INT NOT NULL,
 
 CONSTRAINT UnidadeEspecialidades_PK PRIMARY KEY (idHospital, idUnidade, idEspecialidade),
 CONSTRAINT UnidadeEspecialidades_FK1 FOREIGN KEY (idHospital) REFERENCES Hospital (idHospital),
-CONSTRAINT UnidadeEspecialidades_FK2 FOREIGN KEY (idUnidade) REFERENCES Unidades (idUnidade),
+CONSTRAINT UnidadeEspecialidades_FK2 FOREIGN KEY (idHospital, idUnidade) REFERENCES Unidades (idHospital, idUnidade),
 CONSTRAINT UnidadeEspecialidades_FK3 FOREIGN KEY (idEspecialidade) REFERENCES Especialidade (idEspecialidade)
 )
 
@@ -288,7 +288,7 @@ CONSTRAINT Atendimentos_PK PRIMARY KEY (idAtendimento),
 CONSTRAINT Atendimentos_FK1 FOREIGN KEY (idEspecialidade) REFERENCES Especialidade (idEspecialidade),
 CONSTRAINT Atendimentos_FK2 FOREIGN KEY (idStatusAtendimento) REFERENCES StatusAtendimento (idStatusAtendimento),
 CONSTRAINT Atendimentos_FK3 FOREIGN KEY (idIdentificacaoAtendimento) REFERENCES IdentificacaoAtendimento (idIdentificacaoAtendimento),
-CONSTRAINT Atendimentos_FK4 FOREIGN KEY (idUnidade) REFERENCES Unidades (idUnidade),
+CONSTRAINT Atendimentos_FK4 FOREIGN KEY (idHospital, idUnidade) REFERENCES Unidades (idHospital, idUnidade),
 CONSTRAINT Atendimentos_FK5 FOREIGN KEY (idHospital) REFERENCES Hospital (idHospital),
 CONSTRAINT Atendimentos_FK6 FOREIGN KEY (idAssociado) REFERENCES Associado (idAssociado)
 )

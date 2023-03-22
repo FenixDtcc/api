@@ -22,7 +22,7 @@ namespace QuantoDemoraApi.Models
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
         public string TpUsuario { get; set; }
-        public DateTime? DtCadastro { get; set; }
+        public DateTime DtCadastro { get; set; }
 
         [NotMapped]
         public string PasswordString { get; set; }

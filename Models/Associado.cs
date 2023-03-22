@@ -15,7 +15,6 @@ namespace QuantoDemoraApi.Models
         public string NomeAssociado { get; set; }
         public string SobrenomeAssociado { get; set; }
         public string Cpf { get; set; }
-        public DateTime DtNascimento { get; set; }
         public char Sexo { get; set; }
         public string DddCelular { get; set; }
         public string NroCelular { get; set; }

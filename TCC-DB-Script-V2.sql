@@ -68,24 +68,38 @@ GO
 CREATE TABLE Hospital (
 idHospital INT NOT NULL,
 CNPJ CHAR(18) NOT NULL,
-RazaoSocial VARCHAR(60) NOT NULL,
-NomeFantasia VARCHAR(30) NOT NULL,
+RazaoSocial VARCHAR(100) NOT NULL,
+NomeFantasia VARCHAR(50) NOT NULL,
 idLogradouro INT NOT NULL,
 Endereco VARCHAR(50) NOT NULL,
 Numero VARCHAR(10) NOT NULL,
-Complemento VARCHAR(15) NOT NULL,
+Complemento VARCHAR(15) NULL,
 Bairro VARCHAR(25) NOT NULL,
 Cidade VARCHAR(25) NOT NULL,
 UF CHAR(2) NOT NULL,
 CEP CHAr(9) NOT NULL,
-Latitude FLOAT NULL,
-Longitude FLOAT NULL,
+Latitude FLOAT NOT NULL,
+Longitude FLOAT NOT NULL,
 
 CONSTRAINT Hospital_PK PRIMARY KEY (idHospital),
 CONSTRAINT Hospital_FK1 FOREIGN KEY (idLogradouro) REFERENCES Logradouros (idLogradouro)
 )
 
--- CRIAR INSERTS DE HOSPITAIS PARA SIMULAR
+INSERT INTO Hospital VALUES (1,'84.946.165/0001-40', 'Hospital A LTDA', 'Hospital A', 
+33, 'Dr. Edson de Melo', '357', NULL, 'Vila Maria', 'Sao Paulo', 'SP', '02122-080', 
+-23.511509793821133, -46.583786716042916);
+INSERT INTO Hospital VALUES (2,'85.182.404/0001-04', 'Hospital B LTDA', 'Hospital B', 
+33, 'Voluntarios da Patria', '2786', NULL, 'Santana', 'Sao Paulo', 'SP', '02402-100', 
+-23.495594010219794, -46.625444342874154);
+INSERT INTO Hospital VALUES (3,'17.035.551/0001-93', 'Hospital C LTDA', 'Hospital C', 
+33, 'Voluntarios da Patria', '3693', NULL, 'Santana', 'Sao Paulo', 'SP', '02401-200', 
+-23.487175659964617, -46.62721324059225);
+INSERT INTO Hospital VALUES (4,'88.466.041/0001-19', 'Hospital D LTDA', 'Hospital D', 
+4, 'Nova Cantareira', '2398', NULL, 'Agua Fria', 'Sao Paulo', 'SP', '02340-000', 
+-23.476232382968988, -46.61079992842134);
+INSERT INTO Hospital VALUES (5,'64.507.701/0001-02', 'Hospital E LTDA', 'Hospital E', 
+33, 'Pistoia', '100', NULL, 'Parque Novo Mundo', 'Sao Paulo', 'SP', '02189-000', 
+-23.506910871125083, -46.56865477021042);
 
 GO
 
@@ -94,14 +108,25 @@ idHospital INT NOT NULL,
 idContato INT NOT NULL,
 idTipoContato INT NOT NULL,
 dsContato VARCHAR(50) NOT NULL,
-inContato VARCHAR(100) NOT NULL,
-  
+inContato VARCHAR(100) NULL,
+
 CONSTRAINT Contatos_PK PRIMARY KEY (idHospital, idContato, idTipoContato),
 CONSTRAINT Contatos_FK1 FOREIGN KEY (idHospital) REFERENCES Hospital (idHospital),
 CONSTRAINT Contatos_FK2 FOREIGN KEY (idTipoContato) REFERENCES TiposContato (idTipoContato),
 )
 
--- CRIAR INSERTS DE CONTATOS PARA SIMULAR
+INSERT INTO Contatos VALUES (1, 1, 1, '(11) 3758-5202', NULL);
+INSERT INTO Contatos VALUES (1, 2, 2, 'atendimento@hospitala.com.br', NULL);
+INSERT INTO Contatos VALUES (2, 3, 1, '(11) 3784-9463', NULL);
+INSERT INTO Contatos VALUES (2, 4, 2, 'atendimento@hospitalb.com.br', NULL);
+INSERT INTO Contatos VALUES (2, 5, 3, '(11) 98182-4538', 'WhatsApp do gerente da área administrativa');
+INSERT INTO Contatos VALUES (3, 6, 1, '(11) 3642-2653', NULL);
+INSERT INTO Contatos VALUES (3, 7, 2, 'atendimento@hospitalc.com.br', NULL);
+INSERT INTO Contatos VALUES (4, 8, 1, '(11) 3949-8281', NULL);
+INSERT INTO Contatos VALUES (4, 9, 2, 'atendimento@hospitald.com.br', NULL);
+INSERT INTO Contatos VALUES (5, 10, 1, '(11) 2889-5919', NULL);
+INSERT INTO Contatos VALUES (5, 11, 2, 'atendimento@hospitale.com.br', NULL);
+INSERT INTO Contatos VALUES (5, 12, 3, '(11) 99612-5577', 'WhatsApp do gerente de dados');
 
 GO
 
@@ -170,21 +195,48 @@ INSERT INTO Especialidade VALUES (55,'Urologia');
 
 GO
 
+CREATE TABLE HospitalEspecialidade (
+idHospital INT NOT NULL,
+idEspecialidade INT NOT NULL,
+
+CONSTRAINT HospitalEspecialidade_PK PRIMARY KEY (idHospital, idEspecialidade),
+CONSTRAINT HospitalEspecialidade_FK1 FOREIGN KEY (idHospital) REFERENCES Hospital (idHospital),
+CONSTRAINT HospitalEspecialidade_FK2 FOREIGN KEY (idEspecialidade) REFERENCES Especialidade (idEspecialidade)
+)
+
+INSERT INTO HospitalEspecialidade VALUES (1, 16);
+INSERT INTO HospitalEspecialidade VALUES (1, 45);
+INSERT INTO HospitalEspecialidade VALUES (1, 49);
+INSERT INTO HospitalEspecialidade VALUES (2, 16);
+INSERT INTO HospitalEspecialidade VALUES (2, 45);
+INSERT INTO HospitalEspecialidade VALUES (2, 49);
+INSERT INTO HospitalEspecialidade VALUES (3, 16);
+INSERT INTO HospitalEspecialidade VALUES (3, 45);
+INSERT INTO HospitalEspecialidade VALUES (3, 49);
+INSERT INTO HospitalEspecialidade VALUES (4, 16);
+INSERT INTO HospitalEspecialidade VALUES (4, 45);
+INSERT INTO HospitalEspecialidade VALUES (4, 49);
+INSERT INTO HospitalEspecialidade VALUES (5, 16);
+INSERT INTO HospitalEspecialidade VALUES (5, 45);
+INSERT INTO HospitalEspecialidade VALUES (5, 49);
+
+GO
+
 CREATE TABLE Associado (
 idAssociado INT NOT NULL,
 NomeAssociado VARCHAR(20) NOT NULL,
 SobrenomeAssociado VARCHAR(30) NOT NULL,
 CPF CHAR(14) NOT NULL,
-DtNascimento DATE NOT NULL,
 Sexo CHAR(1) NOT NULL,
 DDDCelular CHAR(2) NOT NULL,
 NroCelular CHAR(9) NOT NULL,
 Email VARCHAR(50) NOT NULL,
-  
+
 CONSTRAINT Associado_PK PRIMARY KEY (idAssociado)
 )
 
--- CRIAR INSERTS DE ASSOCIADO PARA SIMULAR
+INSERT INTO Associado VALUES (1, 'Aparecida', 'Fabiana Lopes', '870.853.739-97', 'F', '11', '999282363', 'aparecida_fabiana_lopes@gmail.com');
+INSERT INTO Associado VALUES (2, 'Osvaldo', 'Diego Dias', '761.763.293-29', 'M', '11', '991879663', 'osvaldo_dias@outlook.com');
 
 GO
 
@@ -275,7 +327,7 @@ CREATE TABLE Usuario (
 idUsuario INT NOT NULL IDENTITY (1,1),
 idAssociado INT NOT NULL,
 NomeUsuario VARCHAR(20) NOT NULL,
-CPF CHAR(14) NULL,
+CPF CHAR(14) NOT NULL,
 Email VARCHAR(50) NOT NULL,
 DtAcesso DATETIME NULL,
 Latitude FLOAT NULL,
