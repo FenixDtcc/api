@@ -43,6 +43,10 @@ WHERE LOWER([u].[NomeUsuario]) = @\_\_ToLower_0) THEN CAST(1 AS bit)
 ELSE CAST(0 AS bit)
 END
 
+---
+
+UsuariosController
+
 CadastrarAdmin()
 http://localhost:5188/Usuarios/CadastrarAdmin
 {
