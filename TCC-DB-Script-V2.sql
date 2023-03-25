@@ -85,19 +85,19 @@ CONSTRAINT Hospital_PK PRIMARY KEY (idHospital),
 CONSTRAINT Hospital_FK1 FOREIGN KEY (idLogradouro) REFERENCES Logradouros (idLogradouro)
 )
 
-INSERT INTO Hospital VALUES (1,'84.946.165/0001-40', 'Hospital A LTDA', 'Hospital A', 
+INSERT INTO Hospital VALUES (1,'84.946.165/0001-40', 'Hospital e Maternidade A LTDA', 'Hospital A', 
 33, 'Dr. Edson de Melo', '357', NULL, 'Vila Maria', 'Sao Paulo', 'SP', '02122-080', 
 -23.511509793821133, -46.583786716042916);
-INSERT INTO Hospital VALUES (2,'85.182.404/0001-04', 'Hospital B LTDA', 'Hospital B', 
+INSERT INTO Hospital VALUES (2,'85.182.404/0001-04', 'Hospital e Maternidade B LTDA', 'Hospital B', 
 33, 'Voluntarios da Patria', '2786', NULL, 'Santana', 'Sao Paulo', 'SP', '02402-100', 
 -23.495594010219794, -46.625444342874154);
-INSERT INTO Hospital VALUES (3,'17.035.551/0001-93', 'Hospital C LTDA', 'Hospital C', 
+INSERT INTO Hospital VALUES (3,'17.035.551/0001-93', 'Hospital e Maternidade C LTDA', 'Hospital C', 
 33, 'Voluntarios da Patria', '3693', NULL, 'Santana', 'Sao Paulo', 'SP', '02401-200', 
 -23.487175659964617, -46.62721324059225);
-INSERT INTO Hospital VALUES (4,'88.466.041/0001-19', 'Hospital D LTDA', 'Hospital D', 
+INSERT INTO Hospital VALUES (4,'88.466.041/0001-19', 'Hospital e Maternidade D LTDA', 'Hospital D', 
 4, 'Nova Cantareira', '2398', NULL, 'Agua Fria', 'Sao Paulo', 'SP', '02340-000', 
 -23.476232382968988, -46.61079992842134);
-INSERT INTO Hospital VALUES (5,'64.507.701/0001-02', 'Hospital E LTDA', 'Hospital E', 
+INSERT INTO Hospital VALUES (5,'64.507.701/0001-02', 'Hospital e Maternidade E LTDA', 'Hospital E', 
 33, 'Pistoia', '100', NULL, 'Parque Novo Mundo', 'Sao Paulo', 'SP', '02189-000', 
 -23.506910871125083, -46.56865477021042);
 
@@ -119,7 +119,7 @@ INSERT INTO Contatos VALUES (1, 1, 1, '(11) 3758-5202', NULL);
 INSERT INTO Contatos VALUES (1, 2, 2, 'atendimento@hospitala.com.br', NULL);
 INSERT INTO Contatos VALUES (2, 3, 1, '(11) 3784-9463', NULL);
 INSERT INTO Contatos VALUES (2, 4, 2, 'atendimento@hospitalb.com.br', NULL);
-INSERT INTO Contatos VALUES (2, 5, 3, '(11) 98182-4538', 'WhatsApp do gerente da área administrativa');
+INSERT INTO Contatos VALUES (2, 5, 3, '(11) 98182-4538', 'WhatsApp do gerente da area administrativa');
 INSERT INTO Contatos VALUES (3, 6, 1, '(11) 3642-2653', NULL);
 INSERT INTO Contatos VALUES (3, 7, 2, 'atendimento@hospitalc.com.br', NULL);
 INSERT INTO Contatos VALUES (4, 8, 1, '(11) 3949-8281', NULL);

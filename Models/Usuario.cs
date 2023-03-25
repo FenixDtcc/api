@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace QuantoDemoraApi.Models
 {
+    [Table("Usuario")]
     public class Usuario
     {
         [Key]
@@ -23,7 +24,6 @@ namespace QuantoDemoraApi.Models
         public byte[] PasswordSalt { get; set; }
         public string TpUsuario { get; set; }
         public DateTime DtCadastro { get; set; }
-
         [NotMapped]
         public string PasswordString { get; set; }
     }

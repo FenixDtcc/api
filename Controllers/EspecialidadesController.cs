@@ -34,7 +34,7 @@ namespace QuantoDemoraApi.Controllers
         }
 
         [HttpGet("{especialidadeId}")]
-        public async Task<IActionResult> GetEspecialidade(int especialidadeId)
+        public async Task<IActionResult> GetId(int especialidadeId)
         {
             try
             {
