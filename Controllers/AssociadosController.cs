@@ -11,10 +11,10 @@ namespace QuantoDemoraApi.Controllers
 {
     [ApiController]
     [Route("[Controller]")]
-    public class ContatosController : ControllerBase
+    public class AssociadosController : ControllerBase
     {
         private readonly DataContext _context;
-        public ContatosController(DataContext context)
+        public AssociadosController(DataContext context)
         {
             _context = context;
         }
@@ -24,9 +24,8 @@ namespace QuantoDemoraApi.Controllers
         {
             try
             {
-                //List<Contato> contatos = new List<Contato>();
-                List<Contato> contatos = await _context.Contatos.ToListAsync();
-                return Ok(contatos);
+                List<Associado> lista = await _context.Associados.ToListAsync();
+                return Ok(lista);
             }
             catch (Exception ex)
             {
@@ -34,14 +33,14 @@ namespace QuantoDemoraApi.Controllers
             }
         }
 
-        [HttpGet("{hospitalId}")]
-        public async Task<IActionResult> GetId(int hospitalId)
+        [HttpGet("{associadoId}")]
+        public async Task<IActionResult> GetId(int associadoId)
         {
             try
             {
-                Contato contato = await _context.Contatos
-                    .FirstOrDefaultAsync(x => x.IdHospital == hospitalId);
-                return Ok(contato);
+                Associado associado = await _context.Associados
+                    .FirstOrDefaultAsync(x => x.IdAssociado == associadoId);
+                return Ok(associado);
             }
             catch (Exception ex)
             {
