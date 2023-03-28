@@ -69,11 +69,6 @@ namespace QuantoDemoraApi.Controllers
         {
             try
             {
-                if (await UsuarioExistente(ua.NomeUsuario))
-                {
-                    throw new Exception("Nome de usuário já existe, favor escolher outro nome!");
-                }
-
                 Criptografia.CriarPasswordHash(ua.PasswordString, out byte[] hash, out byte[] salt);
                 ua.PasswordString = string.Empty;
                 ua.PasswordHash = hash;
@@ -142,26 +137,26 @@ namespace QuantoDemoraApi.Controllers
         {
             try
             {
-                Usuario u = await _context.Usuarios
+                Usuario usuario = await _context.Usuarios
                     .FirstOrDefaultAsync(x => x.NomeUsuario.ToLower().Equals(credenciais.NomeUsuario.ToLower()));
 
-                if (u is null)
+                if (usuario is null)
                 {
                     throw new System.Exception("Usuário não encontrado!");
                 }
-                else if (!Criptografia.VerificarPasswordHash(credenciais.PasswordString, u.PasswordHash, u.PasswordSalt))
+                else if (!Criptografia.VerificarPasswordHash(credenciais.PasswordString, usuario.PasswordHash, usuario.PasswordSalt))
                 {
                     throw new System.Exception("Senha incorreta!");
                 }
                 else
                 {
-                    u.DtAcesso = HorarioBrasilia();
-                    _context.Usuarios.Update(u);
+                    usuario.DtAcesso = HorarioBrasilia();
+                    _context.Usuarios.Update(usuario);
                     await _context.SaveChangesAsync();
 
-                    u.PasswordHash = null;
-                    u.PasswordSalt = null;
-                    return Ok(u);
+                    usuario.PasswordHash = null;
+                    usuario.PasswordSalt = null;
+                    return Ok(usuario);
                     //return Ok(usuario.Id);
                 }
             }
