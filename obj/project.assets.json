@@ -3837,23 +3837,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\iagom\\.nuget\\packages\\": {},
+    "C:\\Users\\etechas\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\DEV\\TCC\\API\\QuantoDemoraApi.csproj",
+      "projectUniqueName": "D:\\3DS\\IagoMartuci\\PMII\\042023\\03042023\\API\\QuantoDemoraApi.csproj",
       "projectName": "QuantoDemoraApi",
-      "projectPath": "C:\\DEV\\TCC\\API\\QuantoDemoraApi.csproj",
-      "packagesPath": "C:\\Users\\iagom\\.nuget\\packages\\",
-      "outputPath": "C:\\DEV\\TCC\\API\\obj\\",
+      "projectPath": "D:\\3DS\\IagoMartuci\\PMII\\042023\\03042023\\API\\QuantoDemoraApi.csproj",
+      "packagesPath": "C:\\Users\\etechas\\.nuget\\packages\\",
+      "outputPath": "D:\\3DS\\IagoMartuci\\PMII\\042023\\03042023\\API\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\iagom\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\etechas\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -3923,7 +3923,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.201\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.102\\RuntimeIdentifierGraph.json"
       }
     }
   }

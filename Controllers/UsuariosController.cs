@@ -75,7 +75,6 @@ namespace QuantoDemoraApi.Controllers
                 ua.PasswordSalt = salt;
                 ua.Email = "quantodemora@gmail.com";
                 ua.Cpf = "999.999.999-99";
-                ua.IdAssociado = 0;
                 ua.DtCadastro = HorarioBrasilia();
                 ua.TpUsuario = "Admin";
                 await _context.Usuarios.AddAsync(ua);
@@ -89,46 +88,42 @@ namespace QuantoDemoraApi.Controllers
             }
         }
 
-        [HttpPost("Cadastrar")]
+        [HttpPost("Cadastrar")] 
         public async Task<IActionResult> Cadastrar(Usuario u)
-        {
+        { 
             Associado a = new Associado();
-
-            try
+            
+            try 
+            { 
+            if (await UsuarioExistente(u.NomeUsuario))
             {
-                if (await UsuarioExistente(u.NomeUsuario))
-                {
-                    throw new Exception("Nome de usuário já existe, favor escolher outro nome!");
-                }
-
-                Criptografia.CriarPasswordHash(u.PasswordString, out byte[] hash, out byte[] salt);
-                u.PasswordString = string.Empty;
-                u.PasswordHash = hash;
-                u.PasswordSalt = salt;
-                u.Email = string.Empty;
-                u.Cpf = string.Empty;
-                u.IdAssociado = a.IdAssociado;
-                u.TpUsuario = "Comum";
-
-                // Ver se tem como implementar isso:
-                // u.Entity<Usuario>().Property(u => u.TpUsuario).HasDefaultValue("Comum");
-
-                if (u.Cpf.Contains(a.Cpf))
-                {
-                    u.DtCadastro = HorarioBrasilia();
-                    await _context.Usuarios.AddAsync(u);
-                    await _context.SaveChangesAsync();
-                }
-                else
-                {
-                    throw new Exception("O CPF do informado não consta na Base de Dados do Plano de Saúde!");
-                }
-
-                return Ok(u.IdUsuario);
+                throw new Exception("Nome de usuário já existe, favor escolher outro nome!"); 
+            } 
+             
+            a = await _context.Associados.FirstOrDefaultAsync(x => x.Cpf.Replace(".", "").Replace("-", "")
+                                                                .Equals(u.Cpf.Replace(".", "").Replace("-", "")));
+            if (a == null)
+                throw new Exception("O CPF do informado não consta na Base de Dados do Plano de Saúde!");
+            
+            bool usuarioCadastrado = await _context.Usuarios.AnyAsync(x => x.Cpf.Replace(".", "").Replace("-", "")
+                                                                .Equals(u.Cpf.Replace(".", "").Replace("-", "")));
+            
+            if (a != null && usuarioCadastrado)
+                throw new Exception("O CPF já está cadastrado como usuário");
+            
+            Criptografia.CriarPasswordHash(u.PasswordString, out byte[] hash, out byte[] salt);
+            u.PasswordString = string.Empty;
+            u.PasswordHash = hash;
+            u.PasswordSalt = salt;
+            u.DtCadastro = HorarioBrasilia();
+            u.TpUsuario = "Comum";
+            await _context.Usuarios.AddAsync(u);
+            await _context.SaveChangesAsync();
+            return Ok(u.IdUsuario);
             }
             catch (System.Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(ex.Message + " - Detalhes do Erro: " + ex.InnerException);
             }
         }
 
