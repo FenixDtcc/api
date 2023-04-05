@@ -19,6 +19,8 @@ namespace QuantoDemoraApi.Models
         public Associado Associado { get; set; }
         public int? IdAssociado { get; set; }
         public DateTime? DtAcesso { get; set; }
+        //[NotMapped]
+        //public byte[]? Foto { get; set; }
         public double? Latitude { get; set; }
         public double? Longitude { get; set; }
         public byte[] PasswordHash { get; set; }

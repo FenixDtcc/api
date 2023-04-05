@@ -77,6 +77,7 @@ namespace QuantoDemoraApi.Controllers
                 ua.Cpf = "999.999.999-99";
                 ua.DtCadastro = HorarioBrasilia();
                 ua.TpUsuario = "Admin";
+
                 await _context.Usuarios.AddAsync(ua);
                 await _context.SaveChangesAsync();
 
@@ -88,38 +89,39 @@ namespace QuantoDemoraApi.Controllers
             }
         }
 
-        [HttpPost("Cadastrar")] 
+        [HttpPost("Cadastrar")]
         public async Task<IActionResult> Cadastrar(Usuario u)
-        { 
+        {
             Associado a = new Associado();
-            
-            try 
-            { 
-            if (await UsuarioExistente(u.NomeUsuario))
+
+            try
             {
-                throw new Exception("Nome de usuário já existe, favor escolher outro nome!"); 
-            } 
-             
-            a = await _context.Associados.FirstOrDefaultAsync(x => x.Cpf.Replace(".", "").Replace("-", "")
-                                                                .Equals(u.Cpf.Replace(".", "").Replace("-", "")));
-            if (a == null)
-                throw new Exception("O CPF do informado não consta na Base de Dados do Plano de Saúde!");
-            
-            bool usuarioCadastrado = await _context.Usuarios.AnyAsync(x => x.Cpf.Replace(".", "").Replace("-", "")
-                                                                .Equals(u.Cpf.Replace(".", "").Replace("-", "")));
-            
-            if (a != null && usuarioCadastrado)
-                throw new Exception("O CPF já está cadastrado como usuário");
-            
-            Criptografia.CriarPasswordHash(u.PasswordString, out byte[] hash, out byte[] salt);
-            u.PasswordString = string.Empty;
-            u.PasswordHash = hash;
-            u.PasswordSalt = salt;
-            u.DtCadastro = HorarioBrasilia();
-            u.TpUsuario = "Comum";
-            await _context.Usuarios.AddAsync(u);
-            await _context.SaveChangesAsync();
-            return Ok(u.IdUsuario);
+                if (await UsuarioExistente(u.NomeUsuario))
+                {
+                    throw new Exception("Nome de usuário já existe, favor escolher outro nome!");
+                }
+
+                a = await _context.Associados.FirstOrDefaultAsync(x => x.Cpf.Replace(".", "").Replace("-", "")
+                                                                    .Equals(u.Cpf.Replace(".", "").Replace("-", "")));
+                if (a == null)
+                    throw new Exception("O CPF do informado não consta na Base de Dados do Plano de Saúde!");
+
+                bool usuarioCadastrado = await _context.Usuarios.AnyAsync(x => x.Cpf.Replace(".", "").Replace("-", "")
+                                                                    .Equals(u.Cpf.Replace(".", "").Replace("-", "")));
+
+                if (a != null && usuarioCadastrado)
+                    throw new Exception("O CPF já está cadastrado como usuário");
+
+                Criptografia.CriarPasswordHash(u.PasswordString, out byte[] hash, out byte[] salt);
+                u.PasswordString = string.Empty;
+                u.PasswordHash = hash;
+                u.PasswordSalt = salt;
+                u.DtCadastro = HorarioBrasilia();
+                u.TpUsuario = "Comum";
+
+                await _context.Usuarios.AddAsync(u);
+                await _context.SaveChangesAsync();
+                return Ok(u.IdUsuario);
             }
             catch (System.Exception ex)
             {
@@ -156,6 +158,96 @@ namespace QuantoDemoraApi.Controllers
                 }
             }
             catch (System.Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("AtualizarLocalizacao")]
+        public async Task<IActionResult> AtualizarLocalizacao(Usuario u)
+        {
+            try
+            {
+                Usuario usuario = await _context.Usuarios
+                    .FirstOrDefaultAsync(x => x.IdUsuario == u.IdUsuario);
+
+                usuario.Latitude = u.Latitude;
+                usuario.Longitude = u.Longitude;
+
+                var attach = _context.Attach(usuario);
+                attach.Property(x => x.IdUsuario).IsModified = false;
+                attach.Property(x => x.Latitude).IsModified = true;
+                attach.Property(x => x.Longitude).IsModified = true;
+
+                int linhasAfetadas = await _context.SaveChangesAsync();
+                return Ok(linhasAfetadas);
+            }
+            catch (System.Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("AtualizarEmail")]
+        public async Task<IActionResult> AtualizarEmail(Usuario u)
+        {
+            try
+            {
+                Usuario usuario = await _context.Usuarios
+                    .FirstOrDefaultAsync(u => u.IdUsuario == u.IdUsuario);
+
+                usuario.Email = u.Email;
+
+                var attach = _context.Attach(usuario);
+                attach.Property(x => x.IdUsuario).IsModified = false;
+                attach.Property(x => x.Email).IsModified = true;
+
+                int linhasAfetadas = await _context.SaveChangesAsync();
+                return Ok(linhasAfetadas);
+            }
+            catch (System.Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /*[HttpPut("AtualizarFoto")]
+        public async Task<IActionResult> AtualizarFoto(Usuario u)
+        {
+            try
+            {
+                Usuario usuario = await _context.Usuarios
+                    .FirstOrDefaultAsync(x => x.IdUsuario == u.IdUsuario);
+
+                usuario.Foto = u.Foto;
+
+                var attach = _context.Attach(usuario);
+                attach.Property(x => x.IdUsuario).IsModified = false;
+                attach.Property(x => x.Foto).IsModified = true;
+
+                int linhasAfetadas = await _context.SaveChangesAsync();
+                return Ok(linhasAfetadas);
+            }
+            catch (System.Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }*/
+
+        [HttpDelete("{usuarioId}")]
+        public async Task<IActionResult> Delete(int usuarioId)
+        {
+            try
+            {
+                Usuario u = await _context.Usuarios
+                    .FirstOrDefaultAsync(u => u.IdUsuario == usuarioId);
+
+                _context.Usuarios.Remove(u);
+                int linhasAfetadas = await _context.SaveChangesAsync();
+
+                return Ok(linhasAfetadas);
+            }
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }

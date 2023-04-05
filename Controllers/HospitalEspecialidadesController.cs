@@ -24,7 +24,6 @@ namespace QuantoDemoraApi.Controllers
         {
             try
             {
-                //List<Hospital> hospitais = new List<Hospital>();
                 List<Hospital> hospitais = await _context.Hospitais
                 .Include(he => he.HospitalEspecialidades)
                 .ThenInclude(e => e.Especialidade)

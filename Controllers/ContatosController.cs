@@ -24,7 +24,6 @@ namespace QuantoDemoraApi.Controllers
         {
             try
             {
-                //List<Contato> contatos = new List<Contato>();
                 List<Contato> contatos = await _context.Contatos.ToListAsync();
                 return Ok(contatos);
             }
@@ -39,9 +38,9 @@ namespace QuantoDemoraApi.Controllers
         {
             try
             {
-                Contato contato = await _context.Contatos
-                    .FirstOrDefaultAsync(x => x.IdHospital == hospitalId);
-                return Ok(contato);
+                List<Contato> contatos = await _context.Contatos
+                   .Where(x => x.IdHospital == hospitalId).ToListAsync();
+                return Ok(contatos);
             }
             catch (Exception ex)
             {
