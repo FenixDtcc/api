@@ -77,7 +77,7 @@ Complemento VARCHAR(15) NULL,
 Bairro VARCHAR(25) NOT NULL,
 Cidade VARCHAR(25) NOT NULL,
 Uf CHAR(2) NOT NULL,
-Cep CHAr(9) NOT NULL,
+Cep CHAR(9) NOT NULL,
 Latitude FLOAT NOT NULL,
 Longitude FLOAT NOT NULL,
 
@@ -119,14 +119,14 @@ INSERT INTO Contatos VALUES (1, 1, 1, '(11) 3758-5202', NULL);
 INSERT INTO Contatos VALUES (1, 2, 2, 'atendimento@hospitala.com.br', NULL);
 INSERT INTO Contatos VALUES (2, 3, 1, '(11) 3784-9463', NULL);
 INSERT INTO Contatos VALUES (2, 4, 2, 'atendimento@hospitalb.com.br', NULL);
-INSERT INTO Contatos VALUES (2, 5, 3, '(11) 98182-4538', 'WhatsApp do gerente da area administrativa');
+INSERT INTO Contatos VALUES (2, 5, 3, '(11) 98182-4538', NULL);
 INSERT INTO Contatos VALUES (3, 6, 1, '(11) 3642-2653', NULL);
 INSERT INTO Contatos VALUES (3, 7, 2, 'atendimento@hospitalc.com.br', NULL);
 INSERT INTO Contatos VALUES (4, 8, 1, '(11) 3949-8281', NULL);
 INSERT INTO Contatos VALUES (4, 9, 2, 'atendimento@hospitald.com.br', NULL);
 INSERT INTO Contatos VALUES (5, 10, 1, '(11) 2889-5919', NULL);
 INSERT INTO Contatos VALUES (5, 11, 2, 'atendimento@hospitale.com.br', NULL);
-INSERT INTO Contatos VALUES (5, 12, 3, '(11) 99612-5577', 'WhatsApp do gerente de dados');
+INSERT INTO Contatos VALUES (5, 12, 3, '(11) 99612-5577', NULL);
 
 GO
 
@@ -332,8 +332,8 @@ Email VARCHAR(50) NOT NULL,
 DtAcesso DATETIME NULL,
 Latitude FLOAT NULL,
 Longitude FLOAT NULL,
-PasswordHash NVARCHAR(MAX) NULL,
-PasswordSalt NVARCHAR(MAX) NULL,
+PasswordHash VARBINARY(MAX) NULL,
+PasswordSalt VARBINARY(MAX) NULL,
 TpUsuario VARCHAR(13) NOT NULL,
 DtCadastro DATETIME NULL,
 

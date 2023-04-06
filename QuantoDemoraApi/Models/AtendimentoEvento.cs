@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace QuantoDemoraApi.Models
 {
     [Table("AtendimentosEventos")]
-    [PrimaryKey((nameof(IdAtendimento)), (nameof(IdEvento)), (nameof(AcAtendimento)))] // PK Concatenada
+    [PrimaryKey((nameof(IdAtendimento)), (nameof(IdEvento)), (nameof(AcAtendimento)))]
     public class AtendimentoEvento
     {
         public Atendimento Atendimento { get; set; }

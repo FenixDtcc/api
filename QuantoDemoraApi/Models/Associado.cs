@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 
 namespace QuantoDemoraApi.Models
 {
-    [Table("Associado")] // Deve seguir o mesmo nome da tabela que foi criada no BD
+    [Table("Associado")]
     public class Associado
     {
         [Key]
@@ -19,6 +19,7 @@ namespace QuantoDemoraApi.Models
         public char Sexo { get; set; }
         public string DddCelular { get; set; }
         public string NroCelular { get; set; }
+        [EmailAddress]
         public string Email { get; set; }
     }
 }

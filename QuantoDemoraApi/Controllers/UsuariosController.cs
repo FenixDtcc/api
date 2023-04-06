@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QuantoDemoraApi.Data;
 using QuantoDemoraApi.Models;
-using QuantoDemoraApi.Repositories.Interfaces;
 using QuantoDemoraApi.Utils;
 
 namespace QuantoDemoraApi.Controllers
@@ -16,18 +15,23 @@ namespace QuantoDemoraApi.Controllers
     public class UsuariosController : ControllerBase
     {
         private readonly DataContext _context;
-        private readonly IUsuarioRepository _usuarioRepository;
-        public UsuariosController(DataContext context, IUsuarioRepository usuarioRepository)
+        public UsuariosController(DataContext context)
         {
             _context = context;
-            _usuarioRepository = usuarioRepository;
         }
 
         [HttpGet("Listar")]
         public async Task<IActionResult> Get()
         {
-            var lista = await _usuarioRepository.GetAsync();
-            return Ok(lista);
+            try
+            {
+                List<Usuario> lista = await _context.Usuarios.ToListAsync();
+                return Ok(lista);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet("{usuarioId}")]
@@ -54,15 +58,12 @@ namespace QuantoDemoraApi.Controllers
                     .FirstOrDefaultAsync(x => x.NomeUsuario.ToLower() == nomeUsuario.ToLower());
                 return Ok(usuario);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
 
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost("CadastrarAdmin")]
         public async Task<IActionResult> CadastrarAdmin(Usuario ua)
         {
@@ -73,16 +74,16 @@ namespace QuantoDemoraApi.Controllers
                 ua.PasswordHash = hash;
                 ua.PasswordSalt = salt;
                 ua.Email = "quantodemora@gmail.com";
-                ua.Cpf = "999.999.999-99";
-                ua.DtCadastro = DateTimeUtils.HorarioBrasilia();
+                ua.Cpf = "000.000.001-91";
+                ua.DtCadastro = LocalDateTime.HorarioBrasilia();
                 ua.TpUsuario = "Admin";
 
                 await _context.Usuarios.AddAsync(ua);
                 await _context.SaveChangesAsync();
 
-                return Created("Cadastro Admin",ua.IdUsuario);
+                return Ok(ua.IdUsuario);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
@@ -95,7 +96,7 @@ namespace QuantoDemoraApi.Controllers
 
             try
             {
-                if (await _usuarioRepository.UsuarioExistente(u.NomeUsuario))
+                if (await UsuarioExistente(u.NomeUsuario))
                 {
                     throw new Exception("Nome de usuário já existe, favor escolher outro nome!");
                 }
@@ -115,14 +116,14 @@ namespace QuantoDemoraApi.Controllers
                 u.PasswordString = string.Empty;
                 u.PasswordHash = hash;
                 u.PasswordSalt = salt;
-                u.DtCadastro = DateTimeUtils.HorarioBrasilia();
+                u.DtCadastro = LocalDateTime.HorarioBrasilia();
                 u.TpUsuario = "Comum";
 
                 await _context.Usuarios.AddAsync(u);
                 await _context.SaveChangesAsync();
                 return Ok(u.IdUsuario);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message + " - Detalhes do Erro: " + ex.InnerException);
             }
@@ -138,25 +139,24 @@ namespace QuantoDemoraApi.Controllers
 
                 if (usuario is null)
                 {
-                    throw new System.Exception("Usuário não encontrado!");
+                    throw new Exception("Usuário não encontrado!");
                 }
                 else if (!Criptografia.VerificarPasswordHash(credenciais.PasswordString, usuario.PasswordHash, usuario.PasswordSalt))
                 {
-                    throw new System.Exception("Senha incorreta!");
+                    throw new Exception("Senha incorreta!");
                 }
                 else
                 {
-                    usuario.DtAcesso = DateTimeUtils.HorarioBrasilia();
+                    usuario.DtAcesso = LocalDateTime.HorarioBrasilia();
                     _context.Usuarios.Update(usuario);
                     await _context.SaveChangesAsync();
 
                     usuario.PasswordHash = null;
                     usuario.PasswordSalt = null;
                     return Ok(usuario);
-                    //return Ok(usuario.Id);
                 }
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
@@ -181,7 +181,7 @@ namespace QuantoDemoraApi.Controllers
                 int linhasAfetadas = await _context.SaveChangesAsync();
                 return Ok(linhasAfetadas);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
@@ -204,34 +204,11 @@ namespace QuantoDemoraApi.Controllers
                 int linhasAfetadas = await _context.SaveChangesAsync();
                 return Ok(linhasAfetadas);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
-
-        /*[HttpPut("AtualizarFoto")]
-        public async Task<IActionResult> AtualizarFoto(Usuario u)
-        {
-            try
-            {
-                Usuario usuario = await _context.Usuarios
-                    .FirstOrDefaultAsync(x => x.IdUsuario == u.IdUsuario);
-
-                usuario.Foto = u.Foto;
-
-                var attach = _context.Attach(usuario);
-                attach.Property(x => x.IdUsuario).IsModified = false;
-                attach.Property(x => x.Foto).IsModified = true;
-
-                int linhasAfetadas = await _context.SaveChangesAsync();
-                return Ok(linhasAfetadas);
-            }
-            catch (System.Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }*/
 
         [HttpDelete("{usuarioId}")]
         public async Task<IActionResult> Delete(int usuarioId)
@@ -252,5 +229,13 @@ namespace QuantoDemoraApi.Controllers
             }
         }
 
+        public async Task<bool> UsuarioExistente(string nomeUsuario)
+        {
+            if (await _context.Usuarios.AnyAsync(x => x.NomeUsuario.ToLower() == nomeUsuario.ToLower()))
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }
