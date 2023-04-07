@@ -7,14 +7,15 @@ using Microsoft.EntityFrameworkCore;
 using QuantoDemoraApi.Data;
 using QuantoDemoraApi.Models;
 
+
 namespace QuantoDemoraApi.Controllers
 {
     [ApiController]
     [Route("[Controller]")]
-    public class HospitalEspecialidadesController : ControllerBase
+    public class EventosController : ControllerBase
     {
         private readonly DataContext _context;
-        public HospitalEspecialidadesController(DataContext context)
+        public EventosController(DataContext context)
         {
             _context = context;
         }
@@ -24,10 +25,7 @@ namespace QuantoDemoraApi.Controllers
         {
             try
             {
-                List<Hospital> lista = await _context.Hospitais
-                .Include(he => he.HospitalEspecialidades)
-                .ThenInclude(e => e.Especialidade)
-                .ToListAsync();
+                List<Evento> lista = await _context.Eventos.ToListAsync();
                 return Ok(lista);
             }
             catch (Exception ex)
@@ -36,16 +34,14 @@ namespace QuantoDemoraApi.Controllers
             }
         }
 
-        [HttpGet("{hospitalId}")]
-        public async Task<IActionResult> GetId(int hospitalId)
+        [HttpGet("{eventoId}")]
+        public async Task<IActionResult> GetId(int eventoId)
         {
             try
             {
-                Hospital hospital = await _context.Hospitais
-                    .Include(he => he.HospitalEspecialidades)
-                    .ThenInclude(e => e.Especialidade)
-                    .FirstOrDefaultAsync(x => x.IdHospital == hospitalId);
-                return Ok(hospital);
+                Evento evento = await _context.Eventos
+                    .FirstOrDefaultAsync(x => x.IdEvento == eventoId);
+                return Ok(evento);
             }
             catch (Exception ex)
             {

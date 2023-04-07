@@ -50,7 +50,7 @@ namespace QuantoDemoraApi.Controllers
         }
 
         [HttpGet("NomeUsuario/{nomeUsuario}")]
-        public async Task<IActionResult> GetUsuario(string nomeUsuario)
+        public async Task<IActionResult> GetUserName(string nomeUsuario)
         {
             try
             {
@@ -92,7 +92,7 @@ namespace QuantoDemoraApi.Controllers
         [HttpPost("Cadastrar")]
         public async Task<IActionResult> Cadastrar(Usuario u)
         {
-            Associado a = new Associado();
+            Associado associado = new Associado();
 
             try
             {
@@ -101,15 +101,15 @@ namespace QuantoDemoraApi.Controllers
                     throw new Exception("Nome de usuário já existe, favor escolher outro nome!");
                 }
 
-                a = await _context.Associados.FirstOrDefaultAsync(x => x.Cpf.Replace(".", "").Replace("-", "")
+                associado = await _context.Associados.FirstOrDefaultAsync(x => x.Cpf.Replace(".", "").Replace("-", "")
                                                                     .Equals(u.Cpf.Replace(".", "").Replace("-", "")));
-                if (a == null)
+                if (associado is null)
                     throw new Exception("O CPF do informado não consta na Base de Dados do Plano de Saúde!");
 
                 bool usuarioCadastrado = await _context.Usuarios.AnyAsync(x => x.Cpf.Replace(".", "").Replace("-", "")
                                                                     .Equals(u.Cpf.Replace(".", "").Replace("-", "")));
 
-                if (a != null && usuarioCadastrado)
+                if (associado != null && usuarioCadastrado)
                     throw new Exception("O CPF já está cadastrado como usuário");
 
                 Criptografia.CriarPasswordHash(u.PasswordString, out byte[] hash, out byte[] salt);
@@ -162,6 +162,7 @@ namespace QuantoDemoraApi.Controllers
             }
         }
 
+        // O LUIZ AINDA VAI ENSINAR A UTILIZAÇÃO DESSE RECURSO
         [HttpPut("AtualizarLocalizacao")]
         public async Task<IActionResult> AtualizarLocalizacao(Usuario u)
         {
@@ -193,7 +194,7 @@ namespace QuantoDemoraApi.Controllers
             try
             {
                 Usuario usuario = await _context.Usuarios
-                    .FirstOrDefaultAsync(u => u.IdUsuario == u.IdUsuario);
+                    .FirstOrDefaultAsync(x => x.IdUsuario == u.IdUsuario);
 
                 usuario.Email = u.Email;
 
@@ -215,10 +216,10 @@ namespace QuantoDemoraApi.Controllers
         {
             try
             {
-                Usuario u = await _context.Usuarios
-                    .FirstOrDefaultAsync(u => u.IdUsuario == usuarioId);
+                Usuario usuario = await _context.Usuarios
+                    .FirstOrDefaultAsync(x => x.IdUsuario == usuarioId);
 
-                _context.Usuarios.Remove(u);
+                _context.Usuarios.Remove(usuario);
                 int linhasAfetadas = await _context.SaveChangesAsync();
 
                 return Ok(linhasAfetadas);

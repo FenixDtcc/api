@@ -11,10 +11,10 @@ namespace QuantoDemoraApi.Controllers
 {
     [ApiController]
     [Route("[Controller]")]
-    public class HospitalEspecialidadesController : ControllerBase
+    public class IdentificacaoAtendimentosController : ControllerBase
     {
         private readonly DataContext _context;
-        public HospitalEspecialidadesController(DataContext context)
+        public IdentificacaoAtendimentosController(DataContext context)
         {
             _context = context;
         }
@@ -24,10 +24,7 @@ namespace QuantoDemoraApi.Controllers
         {
             try
             {
-                List<Hospital> lista = await _context.Hospitais
-                .Include(he => he.HospitalEspecialidades)
-                .ThenInclude(e => e.Especialidade)
-                .ToListAsync();
+                List<IdentificacaoAtendimento> lista = await _context.IdentificacaoAtendimentos.ToListAsync();
                 return Ok(lista);
             }
             catch (Exception ex)
@@ -36,16 +33,14 @@ namespace QuantoDemoraApi.Controllers
             }
         }
 
-        [HttpGet("{hospitalId}")]
-        public async Task<IActionResult> GetId(int hospitalId)
+        [HttpGet("{identificacaoAtendimentoId}")]
+        public async Task<IActionResult> GetId(int identificacaoAtendimentoId)
         {
             try
             {
-                Hospital hospital = await _context.Hospitais
-                    .Include(he => he.HospitalEspecialidades)
-                    .ThenInclude(e => e.Especialidade)
-                    .FirstOrDefaultAsync(x => x.IdHospital == hospitalId);
-                return Ok(hospital);
+                IdentificacaoAtendimento identificacaoAtendimento = await _context.IdentificacaoAtendimentos
+                    .FirstOrDefaultAsync(x => x.IdIdentificacaoAtendimento == identificacaoAtendimentoId);
+                return Ok(identificacaoAtendimento);
             }
             catch (Exception ex)
             {
@@ -54,3 +49,4 @@ namespace QuantoDemoraApi.Controllers
         }
     }
 }
+

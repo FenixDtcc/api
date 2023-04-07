@@ -11,10 +11,10 @@ namespace QuantoDemoraApi.Controllers
 {
     [ApiController]
     [Route("[Controller]")]
-    public class HospitalEspecialidadesController : ControllerBase
+    public class StatusAtendimentosController : ControllerBase
     {
         private readonly DataContext _context;
-        public HospitalEspecialidadesController(DataContext context)
+        public StatusAtendimentosController(DataContext context)
         {
             _context = context;
         }
@@ -24,10 +24,7 @@ namespace QuantoDemoraApi.Controllers
         {
             try
             {
-                List<Hospital> lista = await _context.Hospitais
-                .Include(he => he.HospitalEspecialidades)
-                .ThenInclude(e => e.Especialidade)
-                .ToListAsync();
+                List<StatusAtendimento> lista = await _context.StatusAtendimentos.ToListAsync();
                 return Ok(lista);
             }
             catch (Exception ex)
@@ -36,16 +33,14 @@ namespace QuantoDemoraApi.Controllers
             }
         }
 
-        [HttpGet("{hospitalId}")]
-        public async Task<IActionResult> GetId(int hospitalId)
+        [HttpGet("{statusAtendimentoId}")]
+        public async Task<IActionResult> GetId(int statusAtendimentoId)
         {
             try
             {
-                Hospital hospital = await _context.Hospitais
-                    .Include(he => he.HospitalEspecialidades)
-                    .ThenInclude(e => e.Especialidade)
-                    .FirstOrDefaultAsync(x => x.IdHospital == hospitalId);
-                return Ok(hospital);
+                StatusAtendimento statusAtendimento = await _context.StatusAtendimentos
+                    .FirstOrDefaultAsync(x => x.IdStatusAtendimento == statusAtendimentoId);
+                return Ok(statusAtendimento);
             }
             catch (Exception ex)
             {
