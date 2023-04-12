@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33414.496
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuantoDemoraApi", "QuantoDemoraApi.csproj", "{CCDA7BD9-5EDE-475B-8991-BAFFFA588EED}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuantoDemoraApi", "QuantoDemoraApi\QuantoDemoraApi.csproj", "{BCB23465-2C38-44D8-BC11-51E962E53416}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +15,10 @@ Global
 		{CCDA7BD9-5EDE-475B-8991-BAFFFA588EED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CCDA7BD9-5EDE-475B-8991-BAFFFA588EED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CCDA7BD9-5EDE-475B-8991-BAFFFA588EED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCB23465-2C38-44D8-BC11-51E962E53416}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCB23465-2C38-44D8-BC11-51E962E53416}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCB23465-2C38-44D8-BC11-51E962E53416}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCB23465-2C38-44D8-BC11-51E962E53416}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
