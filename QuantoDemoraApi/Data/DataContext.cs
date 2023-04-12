@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using QuantoDemoraApi.Models;
-using QuantoDemoraApi.Utils;
+using QuantoDemoraApi.Models.Enums;
 
 namespace QuantoDemoraApi.Data
 {
@@ -24,5 +24,26 @@ namespace QuantoDemoraApi.Data
         public DbSet<TipoContato> TiposContato { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
 
+
+        /* #region Required
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            var associado = new Associado();
+            var hospital = new Hospital();
+            var especialidade = new Especialidade();
+            modelBuilder.Entity<Atendimento>()
+                .HasData(new Atendimento 
+                    { 
+                        IdAtendimento = 1,
+                        IdEspecialidade = 1, 
+                        EspcialidadeEnum = EspecialidadeEnum.Acupuntura,
+                        DtAtendimento = DateTime.Now,
+                        Associado = associado,
+                        Hospital = hospital,
+                        Especialidade = especialidade,
+                }
+                );
+        }
+        #endregion seeds*/
     }
 }
