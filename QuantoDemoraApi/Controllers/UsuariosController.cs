@@ -230,7 +230,7 @@ namespace QuantoDemoraApi.Controllers
             }
         }
 
-        public async Task<bool> UsuarioExistente(string nomeUsuario)
+        private async Task<bool> UsuarioExistente(string nomeUsuario)
         {
             if (await _context.Usuarios.AnyAsync(x => x.NomeUsuario.ToLower() == nomeUsuario.ToLower()))
             {
