@@ -28,5 +28,7 @@ namespace QuantoDemoraApi.Models
         public DateTime? DtCadastro { get; set; }
         [NotMapped]
         public string PasswordString { get; set; }
+        [NotMapped]
+        public string Token { get; set; }
     }
 }

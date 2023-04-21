@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QuantoDemoraApi.Data;
 using QuantoDemoraApi.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace QuantoDemoraApi.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[Controller]")]
     public class HospitaisController : ControllerBase

@@ -7,17 +7,46 @@ using Microsoft.EntityFrameworkCore;
 using QuantoDemoraApi.Data;
 using QuantoDemoraApi.Models;
 using QuantoDemoraApi.Utils;
+using Microsoft.Extensions.Configuration;
+using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
+using Microsoft.AspNetCore.Authorization;
 
 namespace QuantoDemoraApi.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[Controller]")]
     public class UsuariosController : ControllerBase
     {
         private readonly DataContext _context;
-        public UsuariosController(DataContext context)
+        private readonly IConfiguration _configuration;
+        public UsuariosController(DataContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
+        }
+
+        private string CriarToken(Usuario u)
+        {
+            List<Claim> claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, u.IdUsuario.ToString()),
+                new Claim(ClaimTypes.Name, u.NomeUsuario)
+            };
+            SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("ConfiguracaoToken:Chave").Value));
+            SigningCredentials creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+            SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.Now.AddDays(1),
+                SigningCredentials = creds
+            };
+            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
         }
 
         [HttpGet("Listar")]
@@ -64,6 +93,7 @@ namespace QuantoDemoraApi.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpPost("CadastrarAdmin")]
         public async Task<IActionResult> CadastrarAdmin(Usuario ua)
         {
@@ -89,6 +119,7 @@ namespace QuantoDemoraApi.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpPost("Cadastrar")]
         public async Task<IActionResult> Cadastrar(Usuario u)
         {
@@ -129,19 +160,20 @@ namespace QuantoDemoraApi.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpPost("Autenticar")]
-        public async Task<IActionResult> Autenticar(Usuario credenciais)
+        public async Task<IActionResult> Autenticar(Usuario creds)
         {
             try
             {
                 Usuario usuario = await _context.Usuarios
-                    .FirstOrDefaultAsync(x => x.NomeUsuario.ToLower().Equals(credenciais.NomeUsuario.ToLower()));
+                    .FirstOrDefaultAsync(x => x.NomeUsuario.ToLower().Equals(creds.NomeUsuario.ToLower()));
 
                 if (usuario is null)
                 {
                     throw new Exception("Usuário não encontrado!");
                 }
-                else if (!Criptografia.VerificarPasswordHash(credenciais.PasswordString, usuario.PasswordHash, usuario.PasswordSalt))
+                else if (!Criptografia.VerificarPasswordHash(creds.PasswordString, usuario.PasswordHash, usuario.PasswordSalt))
                 {
                     throw new Exception("Senha incorreta!");
                 }
@@ -153,6 +185,7 @@ namespace QuantoDemoraApi.Controllers
 
                     usuario.PasswordHash = null;
                     usuario.PasswordSalt = null;
+                    usuario.Token = CriarToken(usuario);
                     return Ok(usuario);
                 }
             }
@@ -229,6 +262,26 @@ namespace QuantoDemoraApi.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        /*
+        [HttpGet("GetByAssociado")]
+        public async Task<IActionResult> GetByAssociadoAsync()
+        {
+            try
+            {
+                string cpf = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+
+                List<Associado> lista = await _context.Associados
+                    .Where(a => a.Cpf == cpf).ToListAsync();
+
+                return Ok(lista);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        */
 
         private async Task<bool> UsuarioExistente(string nomeUsuario)
         {

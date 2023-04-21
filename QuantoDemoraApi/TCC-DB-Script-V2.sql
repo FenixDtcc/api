@@ -321,6 +321,8 @@ CONSTRAINT AtendimentosEventos_FK1 FOREIGN KEY (idAtendimento) REFERENCES Atendi
 CONSTRAINT AtendimentosEventos_FK2 FOREIGN KEY (idEvento) REFERENCES Evento (idEvento),
 )
 
+-- CRIAR INSERTS DE ATENDIMENTOS PARA SIMULAR
+
 GO
 
 CREATE TABLE Usuario (
