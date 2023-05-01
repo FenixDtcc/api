@@ -22,6 +22,6 @@ namespace QuantoDemoraApi.Models
         [NotMapped]
         public TipoContatoEnum TipoContatoEnum { get; set; }
         public string DsContato { get; set; }
-        public string? InContato { get; set; }
+        public string? InfoContato { get; set; }
     }
 }

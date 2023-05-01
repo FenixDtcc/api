@@ -37,6 +37,8 @@ options.SerializerSettings.ReferenceLoopHandling =
 Newtonsoft.Json.ReferenceLoopHandling.Ignore
 );
 
+builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
 //builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 var app = builder.Build();

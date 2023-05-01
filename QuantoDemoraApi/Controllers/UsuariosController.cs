@@ -23,10 +23,12 @@ namespace QuantoDemoraApi.Controllers
     {
         private readonly DataContext _context;
         private readonly IConfiguration _configuration;
-        public UsuariosController(DataContext context, IConfiguration configuration)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public UsuariosController(DataContext context, IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _configuration = configuration;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         private string CriarToken(Usuario u)
@@ -47,6 +49,31 @@ namespace QuantoDemoraApi.Controllers
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
             SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
+        }
+
+        // AGUARDANDO RETORNO DO PROFESSOR LUIZ
+        [HttpGet("GetByAssociado")]
+        public async Task<IActionResult> GetByAssociadoAsync()
+        {
+            try
+            {
+                string cpf = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+
+                List<Associado> lista = await _context.Associados
+                    .Where(a => a.Cpf.Equals(cpf)).ToListAsync();
+
+                return Ok(lista);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // AGUARDANDO RETORNO DO PROFESSOR LUIZ
+        private int ObterAssociadoId()
+        {
+            return int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
         }
 
         [HttpGet("Listar")]
@@ -127,21 +154,16 @@ namespace QuantoDemoraApi.Controllers
 
             try
             {
-                if (await UsuarioExistente(u.NomeUsuario))
-                {
-                    throw new Exception("Nome de usuário já existe, favor escolher outro nome!");
-                }
-
                 associado = await _context.Associados.FirstOrDefaultAsync(x => x.Cpf.Replace(".", "").Replace("-", "")
                                                                     .Equals(u.Cpf.Replace(".", "").Replace("-", "")));
                 if (associado is null)
-                    throw new Exception("O CPF do informado não consta na Base de Dados do Plano de Saúde!");
+                    throw new Exception("O CPF informado não consta na Base de Dados do Plano de Saúde!");
 
                 bool usuarioCadastrado = await _context.Usuarios.AnyAsync(x => x.Cpf.Replace(".", "").Replace("-", "")
                                                                     .Equals(u.Cpf.Replace(".", "").Replace("-", "")));
 
                 if (associado != null && usuarioCadastrado)
-                    throw new Exception("O CPF já está cadastrado como usuário");
+                    throw new Exception("O CPF informado já está cadastrado como usuário");
 
                 Criptografia.CriarPasswordHash(u.PasswordString, out byte[] hash, out byte[] salt);
                 u.PasswordString = string.Empty;
@@ -149,6 +171,9 @@ namespace QuantoDemoraApi.Controllers
                 u.PasswordSalt = salt;
                 u.DtCadastro = LocalDateTime.HorarioBrasilia();
                 u.TpUsuario = "Comum";
+
+                // AGUARDANDO RETORNO DO PROFESSOR LUIZ
+                u.Associado = _context.Associados.FirstOrDefault(a => a.IdAssociado == ObterAssociadoId());
 
                 await _context.Usuarios.AddAsync(u);
                 await _context.SaveChangesAsync();
@@ -195,7 +220,7 @@ namespace QuantoDemoraApi.Controllers
             }
         }
 
-        // O LUIZ AINDA VAI ENSINAR A UTILIZAÇÃO DESSE RECURSO
+        // O PROFESSOR LUIZ AINDA VAI ENSINAR A UTILIZAÇÃO DESSE RECURSO
         [HttpPut("AtualizarLocalizacao")]
         public async Task<IActionResult> AtualizarLocalizacao(Usuario u)
         {
@@ -221,8 +246,8 @@ namespace QuantoDemoraApi.Controllers
             }
         }
 
-        [HttpPut("AtualizarEmail")]
-        public async Task<IActionResult> AtualizarEmail(Usuario u)
+        [HttpPut("AlterarEmail")]
+        public async Task<IActionResult> AlterarEmail(Usuario u)
         {
             try
             {
@@ -239,6 +264,35 @@ namespace QuantoDemoraApi.Controllers
                 return Ok(linhasAfetadas);
             }
             catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("AlterarSenha")]
+        public async Task<IActionResult> AlterarSenha(Usuario creds)
+        {
+            try
+            {
+                Usuario usuario = await _context.Usuarios
+                    .FirstOrDefaultAsync(x => x.Cpf.ToLower().Equals(creds.Cpf.ToLower()));
+
+                if (usuario is null)
+                {
+                    throw new System.Exception("Usuário não encontrado");
+                }
+                else
+                {
+                    Criptografia.CriarPasswordHash(creds.PasswordString, out byte[] hash, out byte[] salt);
+                    usuario.PasswordHash = hash;
+                    usuario.PasswordSalt = salt;
+
+                    _context.Usuarios.Update(usuario);
+                    int linhasAfetadas = await _context.SaveChangesAsync();
+                    return Ok(linhasAfetadas);
+                }
+            }
+            catch (System.Exception ex)
             {
                 return BadRequest(ex.Message);
             }
@@ -261,35 +315,6 @@ namespace QuantoDemoraApi.Controllers
             {
                 return BadRequest(ex.Message);
             }
-        }
-
-        /*
-        [HttpGet("GetByAssociado")]
-        public async Task<IActionResult> GetByAssociadoAsync()
-        {
-            try
-            {
-                string cpf = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
-
-                List<Associado> lista = await _context.Associados
-                    .Where(a => a.Cpf == cpf).ToListAsync();
-
-                return Ok(lista);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-        */
-
-        private async Task<bool> UsuarioExistente(string nomeUsuario)
-        {
-            if (await _context.Usuarios.AnyAsync(x => x.NomeUsuario.ToLower() == nomeUsuario.ToLower()))
-            {
-                return true;
-            }
-            return false;
         }
     }
 }
