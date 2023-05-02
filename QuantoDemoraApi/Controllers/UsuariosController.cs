@@ -1,18 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QuantoDemoraApi.Data;
 using QuantoDemoraApi.Models;
 using QuantoDemoraApi.Utils;
-using Microsoft.Extensions.Configuration;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
+using QuantoDemoraApi.Repository.Interfaces;
+using log4net;
 
 namespace QuantoDemoraApi.Controllers
 {
@@ -21,14 +18,18 @@ namespace QuantoDemoraApi.Controllers
     [Route("[Controller]")]
     public class UsuariosController : ControllerBase
     {
+        private static readonly ILog _logger = LogManager.GetLogger("Usuarios controller");
+
         private readonly DataContext _context;
         private readonly IConfiguration _configuration;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public UsuariosController(DataContext context, IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
+        private readonly IUsuariosRepository _usuariosRepository;
+        public UsuariosController(DataContext context, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IUsuariosRepository usuariosRepository)
         {
             _context = context;
             _configuration = configuration;
             _httpContextAccessor = httpContextAccessor;
+            _usuariosRepository = usuariosRepository;
         }
 
         private string CriarToken(Usuario u)
@@ -76,17 +77,20 @@ namespace QuantoDemoraApi.Controllers
             return int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet("Listar")]
         public async Task<IActionResult> Get()
         {
             try
             {
-                List<Usuario> lista = await _context.Usuarios.ToListAsync();
+                var lista = await _usuariosRepository.GetAllAsync();
                 return Ok(lista);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 
