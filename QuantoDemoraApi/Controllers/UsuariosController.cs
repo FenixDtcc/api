@@ -18,18 +18,19 @@ namespace QuantoDemoraApi.Controllers
     [Route("[Controller]")]
     public class UsuariosController : ControllerBase
     {
-        private static readonly ILog _logger = LogManager.GetLogger("Usuarios controller");
+        private static readonly ILog _logger = LogManager.GetLogger("Usuarios Controller");
 
         private readonly DataContext _context;
         private readonly IConfiguration _configuration;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUsuariosRepository _usuariosRepository;
+
         public UsuariosController(DataContext context, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IUsuariosRepository usuariosRepository)
         {
+            _usuariosRepository = usuariosRepository;
             _context = context;
             _configuration = configuration;
             _httpContextAccessor = httpContextAccessor;
-            _usuariosRepository = usuariosRepository;
         }
 
         private string CriarToken(Usuario u)
@@ -80,7 +81,7 @@ namespace QuantoDemoraApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet("Listar")]
-        public async Task<IActionResult> Get()
+        public async Task<ActionResult<IEnumerable<Usuario>>> Get()
         {
             try
             {
@@ -94,18 +95,25 @@ namespace QuantoDemoraApi.Controllers
             }
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet("{usuarioId}")]
         public async Task<IActionResult> GetId(int usuarioId)
         {
             try
             {
-                Usuario usuario = await _context.Usuarios
-                    .FirstOrDefaultAsync(x => x.IdUsuario == usuarioId);
+                Usuario usuario = await _usuariosRepository.GetByIdAsync(usuarioId);
+                if(usuario == null)
+                {
+                    return NotFound();
+                }
                 return Ok(usuario);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 
@@ -125,6 +133,7 @@ namespace QuantoDemoraApi.Controllers
         }
 
         [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         [HttpPost("CadastrarAdmin")]
         public async Task<IActionResult> CadastrarAdmin(Usuario ua)
         {
@@ -142,7 +151,7 @@ namespace QuantoDemoraApi.Controllers
                 await _context.Usuarios.AddAsync(ua);
                 await _context.SaveChangesAsync();
 
-                return Ok(ua.IdUsuario);
+                return Created("Cadastro admin", ua.IdUsuario);
             }
             catch (Exception ex)
             {
@@ -311,9 +320,10 @@ namespace QuantoDemoraApi.Controllers
                     .FirstOrDefaultAsync(x => x.IdUsuario == usuarioId);
 
                 _context.Usuarios.Remove(usuario);
-                int linhasAfetadas = await _context.SaveChangesAsync();
+                
+                await _context.SaveChangesAsync();
 
-                return Ok(linhasAfetadas);
+                return NoContent();
             }
             catch (Exception ex)
             {

@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using QuantoDemoraApi.Data;
+using QuantoDemoraApi.Repository;
+using QuantoDemoraApi.Repository.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +15,8 @@ builder.Services.AddDbContext<DataContext>(options =>
     //options.UseSqlServer(builder.Configuration.GetConnectionString("ConexaoSomee"));
     options.UseSqlServer(builder.Configuration.GetConnectionString("ConexaoLocal"));
 });
+builder.Services.AddScoped<IUsuariosRepository, UsuariosRepository>();
+builder.Services.AddScoped<IAssociadosRepository, AssociadosRepository>();
 
 builder.Services.AddControllers();
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using log4net;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QuantoDemoraApi.Data;
 using QuantoDemoraApi.Models;
@@ -8,6 +9,8 @@ namespace QuantoDemoraApi.Repository
 {
     public class UsuariosRepository : IUsuariosRepository
     {
+        private static readonly ILog _logger = LogManager.GetLogger("Usuarios Repository");
+
         private readonly DataContext _context;
         public UsuariosRepository(DataContext context) 
         { 
@@ -23,8 +26,25 @@ namespace QuantoDemoraApi.Repository
             }
             catch(Exception ex)
             {
-                throw ex;
+                _logger.Info(ex);
+                throw;
             }
+        }
+
+        public async Task<Usuario> GetByIdAsync(int usuarioId)
+        {
+            try
+            {
+                Usuario usuario = await _context.Usuarios
+                    .FirstOrDefaultAsync(x => x.IdUsuario == usuarioId);
+                return usuario;
+            }
+            catch(Exception ex)
+            {
+                _logger.Info(ex);
+                throw;
+            }
+
         }
     }
 }

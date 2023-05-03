@@ -1,8 +1,10 @@
 using System.Security.Claims;
+using log4net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QuantoDemoraApi.Data;
 using QuantoDemoraApi.Models;
+using QuantoDemoraApi.Repository.Interfaces;
 
 namespace QuantoDemoraApi.Controllers
 {
@@ -10,38 +12,53 @@ namespace QuantoDemoraApi.Controllers
     [Route("[Controller]")]
     public class AssociadosController : ControllerBase
     {
+        private static readonly ILog _logger = LogManager.GetLogger("Associados Controller");
+
         private readonly DataContext _context;
-        public AssociadosController(DataContext context)
+        private readonly IAssociadosRepository _associadosRepository;
+        public AssociadosController(DataContext context, IAssociadosRepository associadosRepository)
         {
+            _associadosRepository = associadosRepository;
             _context = context;
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet("Listar")]
-        public async Task<IActionResult> Get()
+        public async Task<ActionResult<IEnumerable<Associado>>> Get()
         {
             try
             {
-                List<Associado> lista = await _context.Associados.ToListAsync();
+                var lista = await _associadosRepository.GetAllAsync();
+
                 return Ok(lista);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet("{associadoId}")]
-        public async Task<IActionResult> GetId(int associadoId)
+        public async Task<IActionResult> GetIdAsync(int associadoId)
         {
             try
             {
-                Associado associado = await _context.Associados
-                    .FirstOrDefaultAsync(x => x.IdAssociado == associadoId);
+                Associado associado = await _associadosRepository.GetByIdAsync(associadoId);
+                if (associado is null)
+                {
+                    return NotFound();
+                }
                 return Ok(associado);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
     }
