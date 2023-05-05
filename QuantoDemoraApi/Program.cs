@@ -17,6 +17,8 @@ builder.Services.AddDbContext<DataContext>(options =>
 });
 builder.Services.AddScoped<IUsuariosRepository, UsuariosRepository>();
 builder.Services.AddScoped<IAssociadosRepository, AssociadosRepository>();
+builder.Services.AddScoped<IContatosRepository, ContatosRepository>();
+
 
 builder.Services.AddControllers();
 
