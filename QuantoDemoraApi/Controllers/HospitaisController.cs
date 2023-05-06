@@ -1,52 +1,57 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using QuantoDemoraApi.Data;
 using QuantoDemoraApi.Models;
-using Microsoft.AspNetCore.Authorization;
+using log4net;
+using QuantoDemoraApi.Repository.Interfaces;
 
 namespace QuantoDemoraApi.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("[Controller]")]
     public class HospitaisController : ControllerBase
     {
-        private readonly DataContext _context;
-        public HospitaisController(DataContext context)
+        private static readonly ILog _logger = LogManager.GetLogger("Hospitais Controller");
+        private readonly IHospitaisRepository _hospitaisRepository;
+        public HospitaisController(IHospitaisRepository hospitaisRepository)
         {
-            _context = context;
+            _hospitaisRepository = hospitaisRepository;
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet("Listar")]
-        public async Task<IActionResult> Get()
+        public async Task<ActionResult<IEnumerable<Hospital>>> GetAsync()
         {
             try
             {
-                List<Hospital> lista = await _context.Hospitais.ToListAsync();
+                var lista = await _hospitaisRepository.GetAllAsync();
                 return Ok(lista);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet("{hospitalId}")]
-        public async Task<IActionResult> GetId(int hospitalId)
+        public async Task<IActionResult> GetIdAsync(int hospitalId)
         {
             try
             {
-                Hospital hospital = await _context.Hospitais
-                    .FirstOrDefaultAsync(x => x.IdHospital == hospitalId);
+                Hospital hospital = await _hospitaisRepository.GetByIdAsync(hospitalId);    
+                if (hospital == null)
+                {
+                    return NotFound();
+                }
                 return Ok(hospital);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
     }

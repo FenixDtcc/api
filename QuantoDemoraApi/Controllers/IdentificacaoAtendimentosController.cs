@@ -20,7 +20,7 @@ namespace QuantoDemoraApi.Controllers
         }
 
         [HttpGet("Listar")]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetAsync()
         {
             try
             {
@@ -34,7 +34,7 @@ namespace QuantoDemoraApi.Controllers
         }
 
         [HttpGet("{identificacaoAtendimentoId}")]
-        public async Task<IActionResult> GetId(int identificacaoAtendimentoId)
+        public async Task<IActionResult> GetIdAsync(int identificacaoAtendimentoId)
         {
             try
             {

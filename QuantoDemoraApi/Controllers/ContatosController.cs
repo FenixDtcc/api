@@ -1,14 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using log4net;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using QuantoDemoraApi.Data;
 using QuantoDemoraApi.Models;
-using QuantoDemoraApi.Repository;
 using QuantoDemoraApi.Repository.Interfaces;
 
 namespace QuantoDemoraApi.Controllers
@@ -18,20 +10,16 @@ namespace QuantoDemoraApi.Controllers
     public class ContatosController : ControllerBase
     {
         private static readonly ILog _logger = LogManager.GetLogger("Contatos Controller");
-
-        private readonly DataContext _context;
         private readonly IContatosRepository _contatosRepository;
-
-        public ContatosController(DataContext context, IContatosRepository contatosRepository)
+        public ContatosController(IContatosRepository contatosRepository)
         {
-            _context = context;
             _contatosRepository = contatosRepository;
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet("Listar")]
-        public async Task<ActionResult<IEnumerable<Contato>>> Get()
+        public async Task<ActionResult<IEnumerable<Contato>>> GetAsync()
         {
             try
             {
@@ -49,12 +37,12 @@ namespace QuantoDemoraApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet("{hospitalId}")]
-        public async Task<IActionResult> GetId(int hospitalId)
+        public async Task<IActionResult> GetIdAsync(int hospitalId)
         {
             try
             {
                 var lista = await _contatosRepository.GetByIdAsync(hospitalId);
-                if (lista == null)
+                if (lista is null)
                 {
                     return NotFound();
                 }

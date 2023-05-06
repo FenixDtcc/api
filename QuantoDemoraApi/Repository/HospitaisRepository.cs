@@ -6,20 +6,20 @@ using QuantoDemoraApi.Repository.Interfaces;
 
 namespace QuantoDemoraApi.Repository
 {
-    public class AssociadosRepository : IAssociadosRepository
+    public class HospitaisRepository : IHospitaisRepository
     {
-        private static readonly ILog _logger = LogManager.GetLogger("Associados Repository");
+        private static readonly ILog _logger = LogManager.GetLogger("Hospitais Repository");
         private readonly DataContext _context;
-        public AssociadosRepository(DataContext context) 
+        public HospitaisRepository(DataContext context)
         {
             _context = context;
         }
 
-        public async Task<IEnumerable<Associado>> GetAllAsync()
+        public async Task<IEnumerable<Hospital>> GetAllAsync()
         {
             try
             {
-                List<Associado> lista = await _context.Associados.ToListAsync();
+                List<Hospital> lista = await _context.Hospitais.ToListAsync();
                 return lista;
             }
             catch (Exception ex)
@@ -29,13 +29,13 @@ namespace QuantoDemoraApi.Repository
             }
         }
 
-        public async Task<Associado> GetByIdAsync(int associadoId)
+        public async Task<Hospital> GetByIdAsync(int hospitalId)
         {
             try
             {
-                Associado associado = await _context.Associados
-                    .FirstOrDefaultAsync(x => x.IdAssociado == associadoId);
-                return associado;
+                Hospital hospital = await _context.Hospitais
+                    .FirstOrDefaultAsync(x => x.IdHospital == hospitalId);
+                return hospital;
             }
             catch (Exception ex)
             {

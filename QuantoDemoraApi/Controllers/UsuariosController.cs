@@ -38,14 +38,14 @@ namespace QuantoDemoraApi.Controllers
             List<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, u.IdUsuario.ToString()),
-                new Claim(ClaimTypes.Name, u.NomeUsuario)
+                new Claim(ClaimTypes.Name, u.NomeUsuario),
             };
             SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("ConfiguracaoToken:Chave").Value));
             SigningCredentials creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
             SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.Now.AddDays(1),
+                Expires = DateTime.Now.AddSeconds(600),
                 SigningCredentials = creds
             };
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
@@ -53,35 +53,10 @@ namespace QuantoDemoraApi.Controllers
             return tokenHandler.WriteToken(token);
         }
 
-        // AGUARDANDO RETORNO DO PROFESSOR LUIZ
-        [HttpGet("GetByAssociado")]
-        public async Task<IActionResult> GetByAssociadoAsync()
-        {
-            try
-            {
-                string cpf = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
-
-                List<Associado> lista = await _context.Associados
-                    .Where(a => a.Cpf.Equals(cpf)).ToListAsync();
-
-                return Ok(lista);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        // AGUARDANDO RETORNO DO PROFESSOR LUIZ
-        private int ObterAssociadoId()
-        {
-            return int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-        }
-
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet("Listar")]
-        public async Task<ActionResult<IEnumerable<Usuario>>> Get()
+        public async Task<ActionResult<IEnumerable<Usuario>>> GetAsync()
         {
             try
             {
@@ -99,7 +74,7 @@ namespace QuantoDemoraApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet("{usuarioId}")]
-        public async Task<IActionResult> GetId(int usuarioId)
+        public async Task<IActionResult> GetIdAsync(int usuarioId)
         {
             try
             {
@@ -118,7 +93,7 @@ namespace QuantoDemoraApi.Controllers
         }
 
         [HttpGet("NomeUsuario/{nomeUsuario}")]
-        public async Task<IActionResult> GetUserName(string nomeUsuario)
+        public async Task<IActionResult> GetUserNameAsync(string nomeUsuario)
         {
             try
             {
@@ -184,9 +159,8 @@ namespace QuantoDemoraApi.Controllers
                 u.PasswordSalt = salt;
                 u.DtCadastro = LocalDateTime.HorarioBrasilia();
                 u.TpUsuario = "Comum";
+                u.IdAssociado = associado.IdAssociado;
 
-                // AGUARDANDO RETORNO DO PROFESSOR LUIZ
-                u.Associado = _context.Associados.FirstOrDefault(a => a.IdAssociado == ObterAssociadoId());
 
                 await _context.Usuarios.AddAsync(u);
                 await _context.SaveChangesAsync();
@@ -312,7 +286,7 @@ namespace QuantoDemoraApi.Controllers
         }
 
         [HttpDelete("{usuarioId}")]
-        public async Task<IActionResult> Delete(int usuarioId)
+        public async Task<IActionResult> Deletar(int usuarioId)
         {
             try
             {

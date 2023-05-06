@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using log4net;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using QuantoDemoraApi.Data;
 using QuantoDemoraApi.Models;
+using QuantoDemoraApi.Repository.Interfaces;
 
 namespace QuantoDemoraApi.Controllers
 {
@@ -13,38 +9,49 @@ namespace QuantoDemoraApi.Controllers
     [Route("[Controller]")]
     public class EspecialidadesController : ControllerBase
     {
-        private readonly DataContext _context;
-        public EspecialidadesController(DataContext context)
+        private static readonly ILog _logger = LogManager.GetLogger("Especialidades Controller");
+        private readonly IEspecialidadesRepository _especialidadesRepository;
+        public EspecialidadesController(IEspecialidadesRepository especialidadesRepository)
         {
-            _context = context;
+            _especialidadesRepository = especialidadesRepository;
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet("Listar")]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetAsync()
         {
             try
             {
-                List<Especialidade> lista = await _context.Especialidades.ToListAsync();
+                var lista = await _especialidadesRepository.GetAllAsync();
                 return Ok(lista);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet("{especialidadeId}")]
-        public async Task<IActionResult> GetId(int especialidadeId)
+        public async Task<IActionResult> GetIdAsync(int especialidadeId)
         {
             try
             {
-                Especialidade especialidade = await _context.Especialidades
-                    .FirstOrDefaultAsync(x => x.IdEspecialidade == especialidadeId);
+                Especialidade especialidade = await _especialidadesRepository.GetByIdAsync(especialidadeId);
+                if (especialidade == null)
+                {
+                    return NotFound();
+                }
                 return Ok(especialidade);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
     }

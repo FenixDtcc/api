@@ -1,0 +1,5 @@
+Refatorar:
+IdentificacaoAtendimentos
+Logradouros
+StatusAtendimentos
+TiposContato

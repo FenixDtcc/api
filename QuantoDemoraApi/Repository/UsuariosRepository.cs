@@ -1,5 +1,4 @@
 ﻿using log4net;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QuantoDemoraApi.Data;
 using QuantoDemoraApi.Models;
@@ -10,7 +9,6 @@ namespace QuantoDemoraApi.Repository
     public class UsuariosRepository : IUsuariosRepository
     {
         private static readonly ILog _logger = LogManager.GetLogger("Usuarios Repository");
-
         private readonly DataContext _context;
         public UsuariosRepository(DataContext context) 
         { 
@@ -44,7 +42,6 @@ namespace QuantoDemoraApi.Repository
                 _logger.Info(ex);
                 throw;
             }
-
         }
     }
 }

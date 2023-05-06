@@ -15,10 +15,14 @@ builder.Services.AddDbContext<DataContext>(options =>
     //options.UseSqlServer(builder.Configuration.GetConnectionString("ConexaoSomee"));
     options.UseSqlServer(builder.Configuration.GetConnectionString("ConexaoLocal"));
 });
+
 builder.Services.AddScoped<IUsuariosRepository, UsuariosRepository>();
 builder.Services.AddScoped<IAssociadosRepository, AssociadosRepository>();
 builder.Services.AddScoped<IContatosRepository, ContatosRepository>();
-
+builder.Services.AddScoped<IEspecialidadesRepository, EspecialidadesRepository>();
+builder.Services.AddScoped<IEventosRepository, EventosRepository>();
+builder.Services.AddScoped<IHospitaisRepository, HospitaisRepository>();
+builder.Services.AddScoped<IHospitalEspecialidadesRepository, HospitalEspecialidadesRepository>();
 
 builder.Services.AddControllers();
 

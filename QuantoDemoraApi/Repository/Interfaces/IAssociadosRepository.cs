@@ -6,6 +6,5 @@ namespace QuantoDemoraApi.Repository.Interfaces
     {
         Task<IEnumerable<Associado>> GetAllAsync();
         Task<Associado> GetByIdAsync(int associadoId);
-
     }
 }

@@ -1,8 +1,5 @@
-using System.Security.Claims;
 using log4net;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using QuantoDemoraApi.Data;
 using QuantoDemoraApi.Models;
 using QuantoDemoraApi.Repository.Interfaces;
 
@@ -13,24 +10,20 @@ namespace QuantoDemoraApi.Controllers
     public class AssociadosController : ControllerBase
     {
         private static readonly ILog _logger = LogManager.GetLogger("Associados Controller");
-
-        private readonly DataContext _context;
         private readonly IAssociadosRepository _associadosRepository;
-        public AssociadosController(DataContext context, IAssociadosRepository associadosRepository)
+        public AssociadosController(IAssociadosRepository associadosRepository)
         {
             _associadosRepository = associadosRepository;
-            _context = context;
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet("Listar")]
-        public async Task<ActionResult<IEnumerable<Associado>>> Get()
+        public async Task<ActionResult<IEnumerable<Associado>>> GetAsync()
         {
             try
             {
                 var lista = await _associadosRepository.GetAllAsync();
-
                 return Ok(lista);
             }
             catch (Exception ex)
@@ -49,7 +42,7 @@ namespace QuantoDemoraApi.Controllers
             try
             {
                 Associado associado = await _associadosRepository.GetByIdAsync(associadoId);
-                if (associado is null)
+                if (associado == null)
                 {
                     return NotFound();
                 }

@@ -1,12 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using log4net;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using QuantoDemoraApi.Data;
 using QuantoDemoraApi.Models;
-
+using QuantoDemoraApi.Repository.Interfaces;
 
 namespace QuantoDemoraApi.Controllers
 {
@@ -14,38 +9,49 @@ namespace QuantoDemoraApi.Controllers
     [Route("[Controller]")]
     public class EventosController : ControllerBase
     {
-        private readonly DataContext _context;
-        public EventosController(DataContext context)
+        private static readonly ILog _logger = LogManager.GetLogger("Eventos Controller");
+        private readonly IEventosRepository _eventosRepository;
+        public EventosController(IEventosRepository eventosRepository)
         {
-            _context = context;
+            _eventosRepository = eventosRepository;
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet("Listar")]
-        public async Task<IActionResult> Get()
+        public async Task<ActionResult<IEnumerable<Evento>>> GetAsync()
         {
             try
             {
-                List<Evento> lista = await _context.Eventos.ToListAsync();
+                var lista = await _eventosRepository.GetAllAsync();
                 return Ok(lista);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet("{eventoId}")]
-        public async Task<IActionResult> GetId(int eventoId)
+        public async Task<IActionResult> GetIdAsync(int eventoId)
         {
             try
             {
-                Evento evento = await _context.Eventos
-                    .FirstOrDefaultAsync(x => x.IdEvento == eventoId);
+                Evento evento = await _eventosRepository.GetByIdAsync(eventoId);
+                if (evento == null) 
+                {
+                    return NotFound();
+                }
                 return Ok(evento);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
     }
