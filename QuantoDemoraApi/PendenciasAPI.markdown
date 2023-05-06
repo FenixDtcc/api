@@ -1,5 +1,5 @@
 Refatorar:
-IdentificacaoAtendimentos
-Logradouros
-StatusAtendimentos
-TiposContato
+IdentificacaoAtendimentos;
+Logradouros;
+StatusAtendimentos;
+TiposContato;
