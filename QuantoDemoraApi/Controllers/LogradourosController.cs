@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using log4net;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using QuantoDemoraApi.Data;
 using QuantoDemoraApi.Models;
+using QuantoDemoraApi.Repository.Interfaces;
 
 namespace QuantoDemoraApi.Controllers
 {
@@ -13,38 +9,49 @@ namespace QuantoDemoraApi.Controllers
     [Route("[Controller]")]
     public class LogradourosController : ControllerBase
     {
-        private readonly DataContext _context;
-        public LogradourosController(DataContext context)
+        private static readonly ILog _logger = LogManager.GetLogger("Logradouros Controller");
+        private readonly ILogradourosRepository _logradourosRepository;
+        public LogradourosController(ILogradourosRepository logradourosRepository)
         {
-            _context = context;
+            _logradourosRepository = logradourosRepository;
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet("Listar")]
-        public async Task<IActionResult> GetAsync()
+        public async Task<ActionResult<IEnumerable<Logradouro>>> GetAsync()
         {
             try
             {
-                List<Logradouro> lista = await _context.Logradouros.ToListAsync();
+                var lista = await _logradourosRepository.GetAllAsync();
                 return Ok(lista);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet("{logradouroId}")]
         public async Task<IActionResult> GetIdAsync(int logradouroId)
         {
             try
             {
-                Logradouro logradouro = await _context.Logradouros
-                    .FirstOrDefaultAsync(x => x.IdLogradouro == logradouroId);
+                Logradouro logradouro = await _logradourosRepository.GetByIdAsync(logradouroId);    
+                if (logradouro == null)
+                {
+                    return NotFound();
+                }
                 return Ok(logradouro);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
     }

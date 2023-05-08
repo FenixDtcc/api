@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using log4net;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using QuantoDemoraApi.Data;
 using QuantoDemoraApi.Models;
+using QuantoDemoraApi.Repository.Interfaces;
 
 namespace QuantoDemoraApi.Controllers
 {
@@ -13,38 +9,49 @@ namespace QuantoDemoraApi.Controllers
     [Route("[Controller]")]
     public class IdentificacaoAtendimentosController : ControllerBase
     {
-        private readonly DataContext _context;
-        public IdentificacaoAtendimentosController(DataContext context)
+        private static readonly ILog _logger = LogManager.GetLogger("IdentificacaoAtendimentos Controller");
+        private readonly IIdentificacaoAtendimentosRepository _identificacaoAtendimentosRepository;
+        public IdentificacaoAtendimentosController(IIdentificacaoAtendimentosRepository identificacaoAtendimentosRepository)
         {
-            _context = context;
+            _identificacaoAtendimentosRepository = identificacaoAtendimentosRepository; 
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet("Listar")]
         public async Task<IActionResult> GetAsync()
         {
             try
             {
-                List<IdentificacaoAtendimento> lista = await _context.IdentificacaoAtendimentos.ToListAsync();
+                var lista = await _identificacaoAtendimentosRepository.GetAllAsync();
                 return Ok(lista);
-            }
+            }   
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet("{identificacaoAtendimentoId}")]
         public async Task<IActionResult> GetIdAsync(int identificacaoAtendimentoId)
         {
             try
             {
-                IdentificacaoAtendimento identificacaoAtendimento = await _context.IdentificacaoAtendimentos
-                    .FirstOrDefaultAsync(x => x.IdIdentificacaoAtendimento == identificacaoAtendimentoId);
+                IdentificacaoAtendimento identificacaoAtendimento = await _identificacaoAtendimentosRepository.GetByIdAsync(identificacaoAtendimentoId);
+                if (identificacaoAtendimento == null)
+                {
+                    return NotFound();
+                }
                 return Ok(identificacaoAtendimento);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
     }
