@@ -9,7 +9,12 @@ namespace QuantoDemoraApi.Repository.Interfaces
         Task<Usuario> GetByIdAsync(int usuarioId);
         Task<Usuario> GetByNameAsync(string nomeUsuario);
         Task<Usuario> CadastrarAdminAsync(Usuario usarioAdmin);
+        Task<Usuario> CadastrarAsync(Usuario usuario);
+        Task<Usuario> AutenticarAsync(Usuario creds);
+        Task<Usuario> AlterarEmailAsync(Usuario email);
+        Task<Usuario> DeletarAsync(int usuarioId);
         Task<bool> VerificarNomeUsuarioExistente(string nomeUsuario);
         Task<bool> VerificarEmailExistente(string emailUsuario);
+        string CriarToken(Usuario usuario);
     }
 }

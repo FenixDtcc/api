@@ -1,10 +1,14 @@
 ﻿using log4net;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using QuantoDemoraApi.Data;
 using QuantoDemoraApi.Models;
 using QuantoDemoraApi.Repository.Interfaces;
 using QuantoDemoraApi.Utils;
-using System.ComponentModel.DataAnnotations;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace QuantoDemoraApi.Repository
 {
@@ -12,9 +16,11 @@ namespace QuantoDemoraApi.Repository
     {
         private static readonly ILog _logger = LogManager.GetLogger("Usuarios Repository");
         private readonly DataContext _context;
-        public UsuariosRepository(DataContext context)
+        private readonly IConfiguration _configuration;
+        public UsuariosRepository(DataContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
         public async Task<IEnumerable<Usuario>> GetAllAsync()
@@ -65,7 +71,7 @@ namespace QuantoDemoraApi.Repository
         {
             try
             {
-                // Verificar porque não está dando certo
+                // Retorna 500, porque?
                 /*if (await VerificarNomeUsuarioExistente(ua.NomeUsuario) == true)
                     throw new Exception("O nome de usuário escolhido já está em uso");*/
 
@@ -80,8 +86,145 @@ namespace QuantoDemoraApi.Repository
 
                 await _context.Usuarios.AddAsync(ua);
                 await _context.SaveChangesAsync();
-
                 return ua;
+            }
+            catch (BadHttpRequestException ex)
+            {
+                _logger.Info(ex);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.Info(ex);
+                throw;
+            }
+        }
+
+        public async Task<Usuario> CadastrarAsync(Usuario u)
+        {
+            Associado associado = new Associado();
+
+            try
+            {
+                associado = await _context.Associados.FirstOrDefaultAsync(x => x.Cpf.Replace(".", "").Replace("-", "")
+                                                                    .Equals(u.Cpf.Replace(".", "").Replace("-", "")));
+                if (associado is null)
+                    throw new Exception("O CPF informado não consta na Base de Dados do Plano de Saúde!");
+
+                bool usuarioCadastrado = await _context.Usuarios.AnyAsync(x => x.Cpf.Replace(".", "").Replace("-", "")
+                                                                    .Equals(u.Cpf.Replace(".", "").Replace("-", "")));
+
+                if (associado != null && usuarioCadastrado)
+                    throw new Exception("O CPF informado já está cadastrado como usuário");
+
+                // Retorna 500, porque?
+                /*if (associado != null && await VerificarEmailExistente(u.Email) == true)
+                    throw new Exception("O e-mail informado já está em uso");*/
+
+                Criptografia.CriarPasswordHash(u.PasswordString, out byte[] hash, out byte[] salt);
+                u.PasswordString = string.Empty;
+                u.PasswordHash = hash;
+                u.PasswordSalt = salt;
+                u.DtCadastro = LocalDateTime.HorarioBrasilia();
+                u.TpUsuario = "Comum";
+                u.IdAssociado = associado.IdAssociado;
+                u.NomeUsuario = ($"{u.NomeUsuario} {associado.IdAssociado}");
+
+                await _context.Usuarios.AddAsync(u);
+                await _context.SaveChangesAsync();
+                return u;
+            }
+            catch (BadHttpRequestException ex)
+            {
+                _logger.Info(ex);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.Info(ex);
+                throw;
+            }
+        }
+
+        // Não está mais funcionando, retorna código 500:
+        public async Task<Usuario> AutenticarAsync(Usuario creds)
+        {
+            try
+            {
+                Usuario usuario = await _context.Usuarios
+                    .FirstOrDefaultAsync(x => x.Email.ToLower().Equals(creds.Email.ToLower()));
+
+                if (usuario == null)
+                {
+                    throw new Exception("Usuário não encontrado!");
+                }
+                else if (!Criptografia.VerificarPasswordHash(creds.PasswordString, usuario.PasswordHash, usuario.PasswordSalt))
+                {
+                    throw new Exception("Senha incorreta!");
+                }
+                else
+                {
+                    usuario.DtAcesso = LocalDateTime.HorarioBrasilia();
+                    _context.Usuarios.Update(usuario);
+                    await _context.SaveChangesAsync();
+
+                    usuario.PasswordHash = null;
+                    usuario.PasswordSalt = null;
+                    usuario.Token = CriarToken(usuario);
+                    return usuario;
+                }
+            }
+            catch (BadHttpRequestException ex)
+            {
+                _logger.Info(ex);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.Info(ex);
+                throw;
+            }
+        }
+
+        public async Task<Usuario> AlterarEmailAsync(Usuario u)
+        {
+            try
+            {
+                Usuario usuario = await _context.Usuarios
+                    .FirstOrDefaultAsync(x => x.IdUsuario == u.IdUsuario);
+
+                // Retorna 500, porque?
+                if (await VerificarEmailExistente(u.Email) == true)
+                    throw new Exception("O e-mail informado já está em uso");
+
+                usuario.Email = u.Email;
+
+                var attach = _context.Attach(usuario);
+                attach.Property(x => x.IdUsuario).IsModified = false;
+                attach.Property(x => x.Email).IsModified = true;
+
+                int linhasAfetadas = await _context.SaveChangesAsync();
+                return usuario;
+            }
+            catch (Exception ex)
+            {
+                _logger.Info(ex);
+                throw;
+            }
+        }
+
+        public async Task<Usuario> DeletarAsync(int usuarioId)
+        {
+            try
+            {
+                Usuario usuario = await _context.Usuarios
+                    .FirstOrDefaultAsync(x => x.IdUsuario == usuarioId);
+
+                _context.Usuarios.Remove(usuario);
+
+                await _context.SaveChangesAsync();
+
+                return usuario;
             }
             catch (Exception ex)
             {
@@ -108,6 +251,26 @@ namespace QuantoDemoraApi.Repository
                 return true;
             }
             return false;
+        }
+
+        public string CriarToken(Usuario u)
+        {
+            List<Claim> claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, u.IdUsuario.ToString()),
+                new Claim(ClaimTypes.Name, u.NomeUsuario),
+            };
+            SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("ConfiguracaoToken:Chave").Value));
+            SigningCredentials creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+            SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.UtcNow.AddSeconds(600),
+                SigningCredentials = creds
+            };
+            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
         }
     }
 }

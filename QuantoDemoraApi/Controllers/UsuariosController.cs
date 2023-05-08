@@ -3,13 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using QuantoDemoraApi.Data;
 using QuantoDemoraApi.Models;
 using QuantoDemoraApi.Utils;
-using System.Security.Claims;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using QuantoDemoraApi.Repository.Interfaces;
 using log4net;
+using Microsoft.AspNetCore.Server.IIS;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 namespace QuantoDemoraApi.Controllers
 {
@@ -21,15 +19,13 @@ namespace QuantoDemoraApi.Controllers
         private static readonly ILog _logger = LogManager.GetLogger("Usuarios Controller");
 
         private readonly DataContext _context;
-        private readonly IConfiguration _configuration;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUsuariosRepository _usuariosRepository;
 
-        public UsuariosController(DataContext context, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IUsuariosRepository usuariosRepository)
+        public UsuariosController(DataContext context, IHttpContextAccessor httpContextAccessor, IUsuariosRepository usuariosRepository)
         {
             _usuariosRepository = usuariosRepository;
             _context = context;
-            _configuration = configuration;
             _httpContextAccessor = httpContextAccessor;
         }
 
@@ -59,7 +55,7 @@ namespace QuantoDemoraApi.Controllers
             try
             {
                 Usuario usuario = await _usuariosRepository.GetByIdAsync(usuarioId);
-                if(usuario == null)
+                if (usuario == null)
                 {
                     return NotFound();
                 }
@@ -81,7 +77,7 @@ namespace QuantoDemoraApi.Controllers
             try
             {
                 Usuario usuario = await _usuariosRepository.GetByNameAsync(nomeUsuario);
-                if(usuario == null)
+                if (usuario == null)
                 {
                     return NotFound();
                 }
@@ -104,12 +100,12 @@ namespace QuantoDemoraApi.Controllers
             try
             {
                 await _usuariosRepository.CadastrarAdminAsync(ua);
-
-                if(ua == null)
-                {
-                    return BadRequest();
-                }
                 return Created("Cadastro Admin", ua.IdUsuario);
+            }
+            catch (Microsoft.AspNetCore.Http.BadHttpRequestException ex)
+            {
+                _logger.Error(ex);
+                return BadRequest();
             }
             catch (Exception ex)
             {
@@ -119,78 +115,98 @@ namespace QuantoDemoraApi.Controllers
         }
 
         [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost("Cadastrar")]
         public async Task<IActionResult> Cadastrar(Usuario u)
         {
-            Associado associado = new Associado();
-
             try
             {
-                associado = await _context.Associados.FirstOrDefaultAsync(x => x.Cpf.Replace(".", "").Replace("-", "")
-                                                                    .Equals(u.Cpf.Replace(".", "").Replace("-", "")));
-                if (associado is null)
-                    throw new Exception("O CPF informado não consta na Base de Dados do Plano de Saúde!");
-
-                bool usuarioCadastrado = await _context.Usuarios.AnyAsync(x => x.Cpf.Replace(".", "").Replace("-", "")
-                                                                    .Equals(u.Cpf.Replace(".", "").Replace("-", "")));
-
-                if (associado != null && usuarioCadastrado)
-                    throw new Exception("O CPF informado já está cadastrado como usuário");
-
-                // Validar
-                if (associado != null && await _usuariosRepository.VerificarNomeUsuarioExistente(u.NomeUsuario) == true)
-                    throw new Exception("O nome de usuário escolhido já está em uso");
-
-                // Validar
-                if (associado != null && await _usuariosRepository.VerificarEmailExistente(u.Email) == true)
-                    throw new Exception("O e-mail informado já está em uso");
-
-                Criptografia.CriarPasswordHash(u.PasswordString, out byte[] hash, out byte[] salt);
-                u.PasswordString = string.Empty;
-                u.PasswordHash = hash;
-                u.PasswordSalt = salt;
-                u.DtCadastro = LocalDateTime.HorarioBrasilia();
-                u.TpUsuario = "Comum";
-                u.IdAssociado = associado.IdAssociado;
-
-
-                await _context.Usuarios.AddAsync(u);
-                await _context.SaveChangesAsync();
-                return Ok(u.IdUsuario);
+                await _usuariosRepository.CadastrarAsync(u);
+                return Created("Cadastro Usuario", u.IdUsuario);
+            }
+            catch (Microsoft.AspNetCore.Http.BadHttpRequestException ex)
+            {
+                _logger.Error(ex);
+                return BadRequest();
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message + " - Detalhes do Erro: " + ex.InnerException);
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 
         [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost("Autenticar")]
         public async Task<IActionResult> Autenticar(Usuario creds)
         {
             try
             {
-                Usuario usuario = await _context.Usuarios
-                    .FirstOrDefaultAsync(x => x.NomeUsuario.ToLower().Equals(creds.NomeUsuario.ToLower()));
+                await _usuariosRepository.AutenticarAsync(creds);
+                return Ok(creds);
+            }
+            catch(Microsoft.AspNetCore.Http.BadHttpRequestException ex)
+            {
+                _logger.Error(ex);
+                return BadRequest();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
 
-                if (usuario is null)
+        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [HttpPut("AlterarEmail")]
+        public async Task<IActionResult> AlterarEmail(Usuario u)
+        {
+            try
+            {
+                Usuario usuario = await _usuariosRepository.AlterarEmailAsync(u);
+                if (usuario == null)
                 {
-                    throw new Exception("Usuário não encontrado!");
+                    return BadRequest();
                 }
-                else if (!Criptografia.VerificarPasswordHash(creds.PasswordString, usuario.PasswordHash, usuario.PasswordSalt))
+                return Ok(usuario.IdUsuario);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpPut("AlterarSenha")]
+        public async Task<IActionResult> AlterarSenha(Usuario creds)
+        {
+            try
+            {
+                Usuario usuario = await _context.Usuarios
+                    .FirstOrDefaultAsync(x => x.Email.ToLower().Equals(creds.Email.ToLower()));
+
+                if (usuario == null)
                 {
-                    throw new Exception("Senha incorreta!");
+                    throw new Exception("Usuário não encontrado");
                 }
                 else
                 {
-                    usuario.DtAcesso = LocalDateTime.HorarioBrasilia();
-                    _context.Usuarios.Update(usuario);
-                    await _context.SaveChangesAsync();
+                    Criptografia.CriarPasswordHash(creds.PasswordString, out byte[] hash, out byte[] salt);
+                    usuario.PasswordHash = hash;
+                    usuario.PasswordSalt = salt;
 
-                    usuario.PasswordHash = null;
-                    usuario.PasswordSalt = null;
-                    usuario.Token = CriarToken(usuario);
-                    return Ok(usuario);
+                    _context.Usuarios.Update(usuario);
+                    int linhasAfetadas = await _context.SaveChangesAsync();
+                    return Ok(linhasAfetadas);
                 }
             }
             catch (Exception ex)
@@ -225,100 +241,28 @@ namespace QuantoDemoraApi.Controllers
             }
         }
 
-        [HttpPut("AlterarEmail")]
-        public async Task<IActionResult> AlterarEmail(Usuario u)
-        {
-            try
-            {
-                Usuario usuario = await _context.Usuarios
-                    .FirstOrDefaultAsync(x => x.IdUsuario == u.IdUsuario);
-
-                // Validar
-                if (await _usuariosRepository.VerificarEmailExistente(u.Email) == true)
-                    throw new Exception("O e-mail informado já está em uso");
-
-                usuario.Email = u.Email;
-
-                var attach = _context.Attach(usuario);
-                attach.Property(x => x.IdUsuario).IsModified = false;
-                attach.Property(x => x.Email).IsModified = true;
-
-                int linhasAfetadas = await _context.SaveChangesAsync();
-                return Ok(linhasAfetadas);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpPut("AlterarSenha")]
-        public async Task<IActionResult> AlterarSenha(Usuario creds)
-        {
-            try
-            {
-                Usuario usuario = await _context.Usuarios
-                    .FirstOrDefaultAsync(x => x.Cpf.ToLower().Equals(creds.Cpf.ToLower()));
-
-                if (usuario is null)
-                {
-                    throw new System.Exception("Usuário não encontrado");
-                }
-                else
-                {
-                    Criptografia.CriarPasswordHash(creds.PasswordString, out byte[] hash, out byte[] salt);
-                    usuario.PasswordHash = hash;
-                    usuario.PasswordSalt = salt;
-
-                    _context.Usuarios.Update(usuario);
-                    int linhasAfetadas = await _context.SaveChangesAsync();
-                    return Ok(linhasAfetadas);
-                }
-            }
-            catch (System.Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpDelete("{usuarioId}")]
         public async Task<IActionResult> Deletar(int usuarioId)
         {
             try
             {
-                Usuario usuario = await _context.Usuarios
-                    .FirstOrDefaultAsync(x => x.IdUsuario == usuarioId);
-
-                _context.Usuarios.Remove(usuario);
-                
-                await _context.SaveChangesAsync();
-
+                Usuario usuario = await _usuariosRepository.DeletarAsync(usuarioId);
+                if (usuario == null)
+                {
+                    return BadRequest();
+                }
+                // return Ok(usuario.IdUsuario);
+                // OU
                 return NoContent();
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
-        }
-
-        private string CriarToken(Usuario u)
-        {
-            List<Claim> claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, u.IdUsuario.ToString()),
-                new Claim(ClaimTypes.Name, u.NomeUsuario),
-            };
-            SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("ConfiguracaoToken:Chave").Value));
-            SigningCredentials creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-            SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddSeconds(600),
-                SigningCredentials = creds
-            };
-            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
-            SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
         }
     }
 }
