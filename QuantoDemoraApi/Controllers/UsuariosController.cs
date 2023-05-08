@@ -33,26 +33,6 @@ namespace QuantoDemoraApi.Controllers
             _httpContextAccessor = httpContextAccessor;
         }
 
-        private string CriarToken(Usuario u)
-        {
-            List<Claim> claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, u.IdUsuario.ToString()),
-                new Claim(ClaimTypes.Name, u.NomeUsuario),
-            };
-            SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("ConfiguracaoToken:Chave").Value));
-            SigningCredentials creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-            SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.Now.AddSeconds(600),
-                SigningCredentials = creds
-            };
-            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
-            SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
-        }
-
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet("Listar")]
@@ -92,45 +72,49 @@ namespace QuantoDemoraApi.Controllers
             }
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet("NomeUsuario/{nomeUsuario}")]
         public async Task<IActionResult> GetUserNameAsync(string nomeUsuario)
         {
             try
             {
-                Usuario usuario = await _context.Usuarios
-                    .FirstOrDefaultAsync(x => x.NomeUsuario.ToLower() == nomeUsuario.ToLower());
+                Usuario usuario = await _usuariosRepository.GetByNameAsync(nomeUsuario);
+                if(usuario == null)
+                {
+                    return NotFound();
+                }
                 return Ok(usuario);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost("CadastrarAdmin")]
         public async Task<IActionResult> CadastrarAdmin(Usuario ua)
         {
             try
             {
-                Criptografia.CriarPasswordHash(ua.PasswordString, out byte[] hash, out byte[] salt);
-                ua.PasswordString = string.Empty;
-                ua.PasswordHash = hash;
-                ua.PasswordSalt = salt;
-                ua.Email = "quantodemora@gmail.com";
-                ua.Cpf = "000.000.001-91";
-                ua.DtCadastro = LocalDateTime.HorarioBrasilia();
-                ua.TpUsuario = "Admin";
+                await _usuariosRepository.CadastrarAdminAsync(ua);
 
-                await _context.Usuarios.AddAsync(ua);
-                await _context.SaveChangesAsync();
-
-                return Created("Cadastro admin", ua.IdUsuario);
+                if(ua == null)
+                {
+                    return BadRequest();
+                }
+                return Created("Cadastro Admin", ua.IdUsuario);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 
@@ -152,6 +136,14 @@ namespace QuantoDemoraApi.Controllers
 
                 if (associado != null && usuarioCadastrado)
                     throw new Exception("O CPF informado já está cadastrado como usuário");
+
+                // Validar
+                if (associado != null && await _usuariosRepository.VerificarNomeUsuarioExistente(u.NomeUsuario) == true)
+                    throw new Exception("O nome de usuário escolhido já está em uso");
+
+                // Validar
+                if (associado != null && await _usuariosRepository.VerificarEmailExistente(u.Email) == true)
+                    throw new Exception("O e-mail informado já está em uso");
 
                 Criptografia.CriarPasswordHash(u.PasswordString, out byte[] hash, out byte[] salt);
                 u.PasswordString = string.Empty;
@@ -241,6 +233,10 @@ namespace QuantoDemoraApi.Controllers
                 Usuario usuario = await _context.Usuarios
                     .FirstOrDefaultAsync(x => x.IdUsuario == u.IdUsuario);
 
+                // Validar
+                if (await _usuariosRepository.VerificarEmailExistente(u.Email) == true)
+                    throw new Exception("O e-mail informado já está em uso");
+
                 usuario.Email = u.Email;
 
                 var attach = _context.Attach(usuario);
@@ -303,6 +299,26 @@ namespace QuantoDemoraApi.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+
+        private string CriarToken(Usuario u)
+        {
+            List<Claim> claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, u.IdUsuario.ToString()),
+                new Claim(ClaimTypes.Name, u.NomeUsuario),
+            };
+            SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("ConfiguracaoToken:Chave").Value));
+            SigningCredentials creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+            SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.UtcNow.AddSeconds(600),
+                SigningCredentials = creds
+            };
+            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
         }
     }
 }

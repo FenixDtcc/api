@@ -28,7 +28,6 @@ builder.Services.AddScoped<IStatusAtendimentosRepository, StatusAtendimentosRepo
 builder.Services.AddScoped<ITiposContatoRepository, TiposContatoRepository>();
 builder.Services.AddScoped<IUsuariosRepository, UsuariosRepository>();
 
-
 builder.Services.AddControllers();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
