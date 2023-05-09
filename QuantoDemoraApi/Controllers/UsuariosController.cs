@@ -93,7 +93,7 @@ namespace QuantoDemoraApi.Controllers
                 Usuario usuario = await _usuariosRepository.CadastrarAdminAsync(ua);
                 return Created("Cadastro Admin", ua.IdUsuario);
             }
-            catch (Microsoft.AspNetCore.Http.BadHttpRequestException ex)
+            catch (BadHttpRequestException ex)
             {
                 _logger.Error(ex);
                 return BadRequest();

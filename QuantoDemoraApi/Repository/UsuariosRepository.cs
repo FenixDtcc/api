@@ -100,6 +100,7 @@ namespace QuantoDemoraApi.Repository
 
             try
             {
+                // TODAS AS VALIDAÇÕES RETORNAM 500, PORQUE?
                 associado = await _context.Associados.FirstOrDefaultAsync(x => x.Cpf.Replace(".", "").Replace("-", "")
                                                                     .Equals(u.Cpf.Replace(".", "").Replace("-", "")));
                 if (associado is null)
