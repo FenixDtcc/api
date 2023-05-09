@@ -1,32 +1,23 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using QuantoDemoraApi.Data;
 using QuantoDemoraApi.Models;
-using QuantoDemoraApi.Utils;
 using Microsoft.AspNetCore.Authorization;
 using QuantoDemoraApi.Repository.Interfaces;
 using log4net;
-using Microsoft.AspNetCore.Server.IIS;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 namespace QuantoDemoraApi.Controllers
 {
-    [Authorize]
+    // [Authorize] - Desabilitei para poder testar as requisições
     [ApiController]
     [Route("[Controller]")]
     public class UsuariosController : ControllerBase
     {
         private static readonly ILog _logger = LogManager.GetLogger("Usuarios Controller");
 
-        private readonly DataContext _context;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUsuariosRepository _usuariosRepository;
 
-        public UsuariosController(DataContext context, IHttpContextAccessor httpContextAccessor, IUsuariosRepository usuariosRepository)
+        public UsuariosController(IUsuariosRepository usuariosRepository)
         {
             _usuariosRepository = usuariosRepository;
-            _context = context;
-            _httpContextAccessor = httpContextAccessor;
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -99,7 +90,7 @@ namespace QuantoDemoraApi.Controllers
         {
             try
             {
-                await _usuariosRepository.CadastrarAdminAsync(ua);
+                Usuario usuario = await _usuariosRepository.CadastrarAdminAsync(ua);
                 return Created("Cadastro Admin", ua.IdUsuario);
             }
             catch (Microsoft.AspNetCore.Http.BadHttpRequestException ex)
@@ -123,10 +114,10 @@ namespace QuantoDemoraApi.Controllers
         {
             try
             {
-                await _usuariosRepository.CadastrarAsync(u);
+                Usuario usuario = await _usuariosRepository.CadastrarAsync(u);
                 return Created("Cadastro Usuario", u.IdUsuario);
             }
-            catch (Microsoft.AspNetCore.Http.BadHttpRequestException ex)
+            catch (BadHttpRequestException ex)
             {
                 _logger.Error(ex);
                 return BadRequest();
@@ -147,10 +138,10 @@ namespace QuantoDemoraApi.Controllers
         {
             try
             {
-                await _usuariosRepository.AutenticarAsync(creds);
-                return Ok(creds);
+                Usuario usuario = await _usuariosRepository.AutenticarAsync(creds);
+                return Ok(usuario);
             }
-            catch(Microsoft.AspNetCore.Http.BadHttpRequestException ex)
+            catch (BadHttpRequestException ex)
             {
                 _logger.Error(ex);
                 return BadRequest();
@@ -162,7 +153,6 @@ namespace QuantoDemoraApi.Controllers
             }
         }
 
-        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -172,11 +162,12 @@ namespace QuantoDemoraApi.Controllers
             try
             {
                 Usuario usuario = await _usuariosRepository.AlterarEmailAsync(u);
-                if (usuario == null)
-                {
-                    return BadRequest();
-                }
-                return Ok(usuario.IdUsuario);
+                return Ok(u.IdUsuario);
+            }
+            catch (BadHttpRequestException ex)
+            {
+                _logger.Error(ex);
+                return BadRequest();
             }
             catch (Exception ex)
             {
@@ -185,59 +176,50 @@ namespace QuantoDemoraApi.Controllers
             }
         }
 
-        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPut("AlterarSenha")]
         public async Task<IActionResult> AlterarSenha(Usuario creds)
         {
             try
             {
-                Usuario usuario = await _context.Usuarios
-                    .FirstOrDefaultAsync(x => x.Email.ToLower().Equals(creds.Email.ToLower()));
-
-                if (usuario == null)
-                {
-                    throw new Exception("Usuário não encontrado");
-                }
-                else
-                {
-                    Criptografia.CriarPasswordHash(creds.PasswordString, out byte[] hash, out byte[] salt);
-                    usuario.PasswordHash = hash;
-                    usuario.PasswordSalt = salt;
-
-                    _context.Usuarios.Update(usuario);
-                    int linhasAfetadas = await _context.SaveChangesAsync();
-                    return Ok(linhasAfetadas);
-                }
+                Usuario usuario = await _usuariosRepository.AlterarSenhaAsync(creds);
+                return Ok(usuario.IdUsuario);
+            }
+            catch (BadHttpRequestException ex)
+            {
+                _logger.Error(ex);
+                return BadRequest();
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 
         // O PROFESSOR LUIZ AINDA VAI ENSINAR A UTILIZAÇÃO DESSE RECURSO
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPut("AtualizarLocalizacao")]
         public async Task<IActionResult> AtualizarLocalizacao(Usuario u)
         {
             try
             {
-                Usuario usuario = await _context.Usuarios
-                    .FirstOrDefaultAsync(x => x.IdUsuario == u.IdUsuario);
-
-                usuario.Latitude = u.Latitude;
-                usuario.Longitude = u.Longitude;
-
-                var attach = _context.Attach(usuario);
-                attach.Property(x => x.IdUsuario).IsModified = false;
-                attach.Property(x => x.Latitude).IsModified = true;
-                attach.Property(x => x.Longitude).IsModified = true;
-
-                int linhasAfetadas = await _context.SaveChangesAsync();
-                return Ok(linhasAfetadas);
+                Usuario usuario = await _usuariosRepository.AtualizarLocalizacaoAsync(u);
+                return Ok(u.IdUsuario);
+            }
+            catch (BadHttpRequestException ex)
+            {
+                _logger.Error(ex);
+                return BadRequest();
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 
@@ -250,13 +232,14 @@ namespace QuantoDemoraApi.Controllers
             try
             {
                 Usuario usuario = await _usuariosRepository.DeletarAsync(usuarioId);
-                if (usuario == null)
-                {
-                    return BadRequest();
-                }
                 // return Ok(usuario.IdUsuario);
                 // OU
                 return NoContent();
+            }
+            catch (BadHttpRequestException ex)
+            {
+                _logger.Error(ex);
+                return BadRequest();
             }
             catch (Exception ex)
             {

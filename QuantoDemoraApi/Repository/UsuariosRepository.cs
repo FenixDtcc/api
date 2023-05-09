@@ -1,5 +1,4 @@
 ﻿using log4net;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using QuantoDemoraApi.Data;
@@ -88,11 +87,6 @@ namespace QuantoDemoraApi.Repository
                 await _context.SaveChangesAsync();
                 return ua;
             }
-            catch (BadHttpRequestException ex)
-            {
-                _logger.Info(ex);
-                throw;
-            }
             catch (Exception ex)
             {
                 _logger.Info(ex);
@@ -128,16 +122,10 @@ namespace QuantoDemoraApi.Repository
                 u.DtCadastro = LocalDateTime.HorarioBrasilia();
                 u.TpUsuario = "Comum";
                 u.IdAssociado = associado.IdAssociado;
-                u.NomeUsuario = ($"{u.NomeUsuario} {associado.IdAssociado}");
 
                 await _context.Usuarios.AddAsync(u);
                 await _context.SaveChangesAsync();
                 return u;
-            }
-            catch (BadHttpRequestException ex)
-            {
-                _logger.Info(ex);
-                throw;
             }
             catch (Exception ex)
             {
@@ -146,7 +134,6 @@ namespace QuantoDemoraApi.Repository
             }
         }
 
-        // Não está mais funcionando, retorna código 500:
         public async Task<Usuario> AutenticarAsync(Usuario creds)
         {
             try
@@ -154,6 +141,7 @@ namespace QuantoDemoraApi.Repository
                 Usuario usuario = await _context.Usuarios
                     .FirstOrDefaultAsync(x => x.Email.ToLower().Equals(creds.Email.ToLower()));
 
+                // Porque nas validações está retornando sempre código 500 ao invés da mensagem de erro do throw?
                 if (usuario == null)
                 {
                     throw new Exception("Usuário não encontrado!");
@@ -173,11 +161,6 @@ namespace QuantoDemoraApi.Repository
                     usuario.Token = CriarToken(usuario);
                     return usuario;
                 }
-            }
-            catch (BadHttpRequestException ex)
-            {
-                _logger.Info(ex);
-                throw;
             }
             catch (Exception ex)
             {
@@ -213,6 +196,61 @@ namespace QuantoDemoraApi.Repository
             }
         }
 
+        public async Task<Usuario> AlterarSenhaAsync(Usuario creds)
+        {
+            try
+            {
+                Usuario usuario = await _context.Usuarios
+                    .FirstOrDefaultAsync(x => x.Email.ToLower().Equals(creds.Email.ToLower()));
+
+                // Retorna 500, porque?
+                if (usuario == null)
+                {
+                    throw new Exception("Usuário não encontrado");
+                }
+                else
+                {
+                    Criptografia.CriarPasswordHash(creds.PasswordString, out byte[] hash, out byte[] salt);
+                    usuario.PasswordHash = hash;
+                    usuario.PasswordSalt = salt;
+
+                    _context.Usuarios.Update(usuario);
+                    await _context.SaveChangesAsync();
+                    return usuario;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Info(ex);
+                throw;
+            }
+        }
+
+        public async Task<Usuario> AtualizarLocalizacaoAsync(Usuario u)
+        {
+            try
+            {
+                Usuario usuario = await _context.Usuarios
+                    .FirstOrDefaultAsync(x => x.IdUsuario == u.IdUsuario);
+
+                usuario.Latitude = u.Latitude;
+                usuario.Longitude = u.Longitude;
+
+                var attach = _context.Attach(usuario);
+                attach.Property(x => x.IdUsuario).IsModified = false;
+                attach.Property(x => x.Latitude).IsModified = true;
+                attach.Property(x => x.Longitude).IsModified = true;
+
+                int linhasAfetadas = await _context.SaveChangesAsync();
+                return usuario;
+            }
+            catch (Exception ex)
+            {
+                _logger.Info(ex);
+                throw;
+            }
+        }
+
         public async Task<Usuario> DeletarAsync(int usuarioId)
         {
             try
@@ -233,7 +271,7 @@ namespace QuantoDemoraApi.Repository
             }
         }
 
-        // Verificar porque não está dando certo
+        // Verificar porque não está dando certo a validação abaixo nos métodos
         public async Task<bool> VerificarNomeUsuarioExistente(string nomeUsuario)
         {
             if (await _context.Usuarios.AnyAsync(x => x.NomeUsuario.ToLower() == nomeUsuario.ToLower()))
@@ -243,7 +281,7 @@ namespace QuantoDemoraApi.Repository
             return false;
         }
 
-        // Verificar porque não está dando certo
+        // Verificar porque não está dando certo a validação abaixo nos métodos
         public async Task<bool> VerificarEmailExistente(string emailUsuario)
         {
             if (await _context.Usuarios.AnyAsync(x => x.Email.ToLower() == emailUsuario.ToLower()))
@@ -258,7 +296,7 @@ namespace QuantoDemoraApi.Repository
             List<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, u.IdUsuario.ToString()),
-                new Claim(ClaimTypes.Name, u.NomeUsuario),
+                new Claim(ClaimTypes.Name, u.Email),
             };
             SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("ConfiguracaoToken:Chave").Value));
             SigningCredentials creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
