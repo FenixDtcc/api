@@ -71,8 +71,8 @@ namespace QuantoDemoraApi.Repository
             try
             {
                 // Retorna 500, porque?
-                /*if (await VerificarNomeUsuarioExistente(ua.NomeUsuario) == true)
-                    throw new Exception("O nome de usuário escolhido já está em uso");*/
+                if (await VerificarNomeUsuarioExistente(ua.NomeUsuario) == true)
+                    throw new Exception("O nome de usuário escolhido já está em uso");
 
                 Criptografia.CriarPasswordHash(ua.PasswordString, out byte[] hash, out byte[] salt);
                 ua.PasswordString = string.Empty;
@@ -139,8 +139,16 @@ namespace QuantoDemoraApi.Repository
         {
             try
             {
+                /*List<Usuario> listaUsuarios = await _context.Usuarios.ToListAsync();
+
+                if(listaUsuarios.Exists(x => x.TpUsuario.Contains("Admin") == creds.TpUsuario.Contains("Admin")))
+                {
+                    Usuario usuarioAdmin = await _context.Usuarios
+                    .FirstOrDefaultAsync(x => x.NomeUsuario.ToLower().Equals(creds.NomeUsuario.ToLower()));
+                }*/
+
                 Usuario usuario = await _context.Usuarios
-                    .FirstOrDefaultAsync(x => x.Email.ToLower().Equals(creds.Email.ToLower()));
+                    .FirstOrDefaultAsync(x => x.NomeUsuario.ToLower().Equals(creds.NomeUsuario.ToLower()));
 
                 // Porque nas validações está retornando sempre código 500 ao invés da mensagem de erro do throw?
                 if (usuario == null)
@@ -273,7 +281,7 @@ namespace QuantoDemoraApi.Repository
         }
 
         // Verificar porque não está dando certo a validação abaixo nos métodos
-        public async Task<bool> VerificarNomeUsuarioExistente(string nomeUsuario)
+        private async Task<bool> VerificarNomeUsuarioExistente(string nomeUsuario)
         {
             if (await _context.Usuarios.AnyAsync(x => x.NomeUsuario.ToLower() == nomeUsuario.ToLower()))
             {
@@ -283,7 +291,7 @@ namespace QuantoDemoraApi.Repository
         }
 
         // Verificar porque não está dando certo a validação abaixo nos métodos
-        public async Task<bool> VerificarEmailExistente(string emailUsuario)
+        private async Task<bool> VerificarEmailExistente(string emailUsuario)
         {
             if (await _context.Usuarios.AnyAsync(x => x.Email.ToLower() == emailUsuario.ToLower()))
             {
@@ -292,7 +300,7 @@ namespace QuantoDemoraApi.Repository
             return false;
         }
 
-        public string CriarToken(Usuario u)
+        private string CriarToken(Usuario u)
         {
             List<Claim> claims = new List<Claim>
             {

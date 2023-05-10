@@ -14,8 +14,5 @@ namespace QuantoDemoraApi.Repository.Interfaces
         Task<Usuario> AlterarSenhaAsync(Usuario senha);
         Task<Usuario> AtualizarLocalizacaoAsync(Usuario usuario);
         Task<Usuario> DeletarAsync(int usuarioId);
-        Task<bool> VerificarNomeUsuarioExistente(string nomeUsuario);
-        Task<bool> VerificarEmailExistente(string emailUsuario);
-        string CriarToken(Usuario usuario);
     }
 }

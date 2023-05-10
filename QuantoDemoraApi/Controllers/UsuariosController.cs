@@ -95,12 +95,12 @@ namespace QuantoDemoraApi.Controllers
             }
             catch (BadHttpRequestException ex)
             {
-                _logger.Error(ex);
+                _logger.Error("Erro 1");
                 return BadRequest();
             }
             catch (Exception ex)
             {
-                _logger.Error(ex);
+                _logger.Error("Erro 2");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
