@@ -264,15 +264,15 @@ CONSTRAINT StatusAtendimento_PK PRIMARY KEY (idStatusAtendimento)
 )
 
 INSERT INTO StatusAtendimento VALUES (1,'Iniciado');
-INSERT INTO StatusAtendimento VALUES (2,'Finalizado'); 
-INSERT INTO StatusAtendimento VALUES (3,'Cancelado');
-INSERT INTO StatusAtendimento VALUES (4,'Suspenso');
-INSERT INTO StatusAtendimento VALUES (5,'Em andamento');
-INSERT INTO StatusAtendimento VALUES (6,'Aguardando'); 
+INSERT INTO StatusAtendimento VALUES (2,'Aguardando'); 
+INSERT INTO StatusAtendimento VALUES (3,'Em andamento');
+INSERT INTO StatusAtendimento VALUES (4,'Finalizado'); 
+INSERT INTO StatusAtendimento VALUES (5,'Cancelado');
+INSERT INTO StatusAtendimento VALUES (6,'Suspenso');
 INSERT INTO StatusAtendimento VALUES (7,'Encaminhado');
 INSERT INTO StatusAtendimento VALUES (8,'Transferido'); 
-
 GO
+
 
 CREATE TABLE Evento (
 idEvento INT NOT NULL,

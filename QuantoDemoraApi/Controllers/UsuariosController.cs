@@ -93,15 +93,19 @@ namespace QuantoDemoraApi.Controllers
                 Usuario usuario = await _usuariosRepository.CadastrarAdminAsync(ua);
                 return Created("Cadastro Admin", ua.IdUsuario);
             }
-            catch (BadHttpRequestException ex)
+            catch (HttpRequestException ex)
             {
-                _logger.Error(ex);
-                return BadRequest(ex.Message);
+                if ((int)ex.StatusCode == 500)
+                {
+                    _logger.Error(ex);
+                    return StatusCode(StatusCodes.Status500InternalServerError);
+                }
+                throw;
             }
             catch (Exception ex)
             {
                 _logger.Error(ex);
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return BadRequest(ex.Message);
             }
         }
 
