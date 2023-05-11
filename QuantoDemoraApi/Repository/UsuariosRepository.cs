@@ -71,7 +71,7 @@ namespace QuantoDemoraApi.Repository
             try
             {
                 // Retorna 500, porque?
-                if (await VerificarNomeUsuarioExistente(ua.NomeUsuario) == true)
+                if (await VerificarNomeUsuarioExistente(ua.NomeUsuario) is true)
                     throw new Exception("O nome de usuário escolhido já está em uso");
 
                 Criptografia.CriarPasswordHash(ua.PasswordString, out byte[] hash, out byte[] salt);
@@ -89,7 +89,7 @@ namespace QuantoDemoraApi.Repository
             }
             catch (Exception ex)
             {
-                _logger.Info(ex);
+                _logger.Error(ex);
                 throw;
             }
         }
@@ -103,18 +103,18 @@ namespace QuantoDemoraApi.Repository
                 // TODAS AS VALIDAÇÕES RETORNAM 500, PORQUE?
                 associado = await _context.Associados.FirstOrDefaultAsync(x => x.Cpf.Replace(".", "").Replace("-", "")
                                                                     .Equals(u.Cpf.Replace(".", "").Replace("-", "")));
-                if (associado is null)
-                    throw new Exception("O CPF informado não consta na Base de Dados do Plano de Saúde!");
+                if (associado == null)
+                    throw new Exception("O CPF informado não consta na Base de Dados do Plano de Saúde.");
 
                 bool usuarioCadastrado = await _context.Usuarios.AnyAsync(x => x.Cpf.Replace(".", "").Replace("-", "")
                                                                     .Equals(u.Cpf.Replace(".", "").Replace("-", "")));
 
                 if (associado != null && usuarioCadastrado)
-                    throw new Exception("O CPF informado já está cadastrado como usuário");
+                    throw new Exception("O CPF informado já está cadastrado como usuário.");
 
                 // Retorna 500, porque?
-                /*if (associado != null && await VerificarEmailExistente(u.Email) == true)
-                    throw new Exception("O e-mail informado já está em uso");*/
+                if (associado != null && await VerificarNomeUsuarioExistente(u.NomeUsuario) is true)
+                    throw new Exception("O e-mail informado já está em uso");
 
                 Criptografia.CriarPasswordHash(u.PasswordString, out byte[] hash, out byte[] salt);
                 u.PasswordString = string.Empty;
@@ -139,25 +139,17 @@ namespace QuantoDemoraApi.Repository
         {
             try
             {
-                /*List<Usuario> listaUsuarios = await _context.Usuarios.ToListAsync();
-
-                if(listaUsuarios.Exists(x => x.TpUsuario.Contains("Admin") == creds.TpUsuario.Contains("Admin")))
-                {
-                    Usuario usuarioAdmin = await _context.Usuarios
-                    .FirstOrDefaultAsync(x => x.NomeUsuario.ToLower().Equals(creds.NomeUsuario.ToLower()));
-                }*/
-
                 Usuario usuario = await _context.Usuarios
                     .FirstOrDefaultAsync(x => x.NomeUsuario.ToLower().Equals(creds.NomeUsuario.ToLower()));
 
                 // Porque nas validações está retornando sempre código 500 ao invés da mensagem de erro do throw?
                 if (usuario == null)
                 {
-                    throw new Exception("Usuário não encontrado!");
+                    throw new Exception("Usuário não encontrado");
                 }
                 else if (!Criptografia.VerificarPasswordHash(creds.PasswordString, usuario.PasswordHash, usuario.PasswordSalt))
                 {
-                    throw new Exception("Senha incorreta!");
+                    throw new Exception("Senha incorreta");
                 }
                 else
                 {
@@ -186,7 +178,7 @@ namespace QuantoDemoraApi.Repository
                     .FirstOrDefaultAsync(x => x.IdUsuario == u.IdUsuario);
 
                 // Retorna 500, porque?
-                if (await VerificarEmailExistente(u.Email) == true)
+                if (await VerificarEmailExistente(u.Email) is true)
                     throw new Exception("O e-mail informado já está em uso");
 
                 usuario.Email = u.Email;
@@ -210,7 +202,8 @@ namespace QuantoDemoraApi.Repository
             try
             {
                 Usuario usuario = await _context.Usuarios
-                    .FirstOrDefaultAsync(x => x.Email.ToLower().Equals(creds.Email.ToLower()));
+                    .FirstOrDefaultAsync(x => x.NomeUsuario.ToLower().Equals(creds.NomeUsuario.ToLower()));
+                    // .FirstOrDefaultAsync(x => x.Email.ToLower().Equals(creds.Email.ToLower()));
 
                 // Retorna 500, porque?
                 if (usuario == null)

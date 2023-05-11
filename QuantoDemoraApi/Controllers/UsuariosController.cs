@@ -95,12 +95,12 @@ namespace QuantoDemoraApi.Controllers
             }
             catch (BadHttpRequestException ex)
             {
-                _logger.Error("Erro 1");
-                return BadRequest();
+                _logger.Error(ex);
+                return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
-                _logger.Error("Erro 2");
+                _logger.Error(ex);
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -120,7 +120,7 @@ namespace QuantoDemoraApi.Controllers
             catch (BadHttpRequestException ex)
             {
                 _logger.Error(ex);
-                return BadRequest();
+                return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
@@ -144,7 +144,7 @@ namespace QuantoDemoraApi.Controllers
             catch (BadHttpRequestException ex)
             {
                 _logger.Error(ex);
-                return BadRequest();
+                return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
@@ -167,7 +167,7 @@ namespace QuantoDemoraApi.Controllers
             catch (BadHttpRequestException ex)
             {
                 _logger.Error(ex);
-                return BadRequest();
+                return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
@@ -190,7 +190,7 @@ namespace QuantoDemoraApi.Controllers
             catch (BadHttpRequestException ex)
             {
                 _logger.Error(ex);
-                return BadRequest();
+                return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
@@ -214,7 +214,7 @@ namespace QuantoDemoraApi.Controllers
             catch (BadHttpRequestException ex)
             {
                 _logger.Error(ex);
-                return BadRequest();
+                return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
@@ -239,7 +239,7 @@ namespace QuantoDemoraApi.Controllers
             catch (BadHttpRequestException ex)
             {
                 _logger.Error(ex);
-                return BadRequest();
+                return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
