@@ -3,6 +3,7 @@ using QuantoDemoraApi.Models;
 using Microsoft.AspNetCore.Authorization;
 using QuantoDemoraApi.Repository.Interfaces;
 using log4net;
+using Microsoft.Data.SqlClient;
 
 namespace QuantoDemoraApi.Controllers
 {
@@ -93,14 +94,27 @@ namespace QuantoDemoraApi.Controllers
                 Usuario usuario = await _usuariosRepository.CadastrarAdminAsync(ua);
                 return Created("Cadastro Admin", ua.IdUsuario);
             }
-            catch (HttpRequestException ex)
+            /*catch (HttpRequestException ex)
             {
                 if ((int)ex.StatusCode == 500)
                 {
                     _logger.Error(ex);
                     return StatusCode(StatusCodes.Status500InternalServerError);
                 }
+
+                _logger.Error(ex);
                 throw;
+            }*/
+            catch(SqlException ex)
+            {
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.Error(ex);
+                //return StatusCode(StatusCodes.Status500InternalServerError);
+                return StatusCode(StatusCodes.Status404NotFound);
             }
             catch (Exception ex)
             {
