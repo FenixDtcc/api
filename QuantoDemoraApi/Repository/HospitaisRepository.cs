@@ -35,6 +35,10 @@ namespace QuantoDemoraApi.Repository
             {
                 Hospital hospital = await _context.Hospitais
                     .FirstOrDefaultAsync(x => x.IdHospital == hospitalId);
+
+                if (hospital == null)
+                    throw new Exception("Hospital não encontrado, favor conferir o id informado.");
+
                 return hospital;
             }
             catch (Exception ex)

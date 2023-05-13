@@ -35,6 +35,10 @@ namespace QuantoDemoraApi.Repository
             {
                 TipoContato tipoContato = await _context.TiposContato
                     .FirstOrDefaultAsync(x => x.IdTipoContato == tipoContatoId);
+
+                if (tipoContato == null)
+                    throw new Exception("Tipo do contato não encontrado, favor conferir o id informado.");
+
                 return tipoContato;
             }
             catch (Exception ex)

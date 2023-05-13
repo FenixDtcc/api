@@ -42,6 +42,10 @@ namespace QuantoDemoraApi.Repository
             {
                 Usuario usuario = await _context.Usuarios
                     .FirstOrDefaultAsync(x => x.IdUsuario == usuarioId);
+
+                if (usuario == null)
+                    throw new Exception("Usuário não encontrado, favor conferir o id informado.");
+
                 return usuario;
             }
             catch (Exception ex)
@@ -57,6 +61,10 @@ namespace QuantoDemoraApi.Repository
             {
                 Usuario usuario = await _context.Usuarios
                     .FirstOrDefaultAsync(x => x.NomeUsuario.ToLower() == nomeUsuario.ToLower());
+
+                if (usuario == null)
+                    throw new Exception("Usuário não encontrado, favor conferir o nome de usuário informado.");
+
                 return usuario;
             }
             catch (Exception ex)
@@ -70,9 +78,11 @@ namespace QuantoDemoraApi.Repository
         {
             try
             {
-                // Retorna 500, porque?
                 if (await VerificarNomeUsuarioExistente(ua.NomeUsuario) is true)
-                    throw new Exception("O nome de usuário escolhido já está em uso");
+                    throw new Exception("O nome de usuário escolhido já está em uso.");
+
+                if (ua.PasswordString.Length < 6)
+                    throw new Exception("A senha deve conter no mínimo 6 caracteres.");
 
                 Criptografia.CriarPasswordHash(ua.PasswordString, out byte[] hash, out byte[] salt);
                 ua.PasswordString = string.Empty;
@@ -89,7 +99,7 @@ namespace QuantoDemoraApi.Repository
             }
             catch (Exception ex)
             {
-                _logger.Error(ex);
+                _logger.Info(ex);
                 throw;
             }
         }
@@ -100,9 +110,9 @@ namespace QuantoDemoraApi.Repository
 
             try
             {
-                // TODAS AS VALIDAÇÕES RETORNAM 500, PORQUE?
                 associado = await _context.Associados.FirstOrDefaultAsync(x => x.Cpf.Replace(".", "").Replace("-", "")
                                                                     .Equals(u.Cpf.Replace(".", "").Replace("-", "")));
+
                 if (associado == null)
                     throw new Exception("O CPF informado não consta na Base de Dados do Plano de Saúde.");
 
@@ -112,9 +122,14 @@ namespace QuantoDemoraApi.Repository
                 if (associado != null && usuarioCadastrado)
                     throw new Exception("O CPF informado já está cadastrado como usuário.");
 
-                // Retorna 500, porque?
                 if (associado != null && await VerificarNomeUsuarioExistente(u.NomeUsuario) is true)
-                    throw new Exception("O e-mail informado já está em uso");
+                    throw new Exception("O nome de usuário informado já está em uso.");
+
+                if (associado != null && await VerificarEmailExistente(u.Email) is true)
+                    throw new Exception("O e-mail informado já está em uso.");
+
+                if (associado != null && u.PasswordString.Length < 6)
+                    throw new Exception("A senha deve conter no mínimo 6 caracteres.");
 
                 Criptografia.CriarPasswordHash(u.PasswordString, out byte[] hash, out byte[] salt);
                 u.PasswordString = string.Empty;
@@ -142,14 +157,13 @@ namespace QuantoDemoraApi.Repository
                 Usuario usuario = await _context.Usuarios
                     .FirstOrDefaultAsync(x => x.NomeUsuario.ToLower().Equals(creds.NomeUsuario.ToLower()));
 
-                // Porque nas validações está retornando sempre código 500 ao invés da mensagem de erro do throw?
                 if (usuario == null)
                 {
-                    throw new Exception("Usuário não encontrado");
+                    throw new Exception("Usuário não encontrado.");
                 }
                 else if (!Criptografia.VerificarPasswordHash(creds.PasswordString, usuario.PasswordHash, usuario.PasswordSalt))
                 {
-                    throw new Exception("Senha incorreta");
+                    throw new Exception("Senha incorreta.");
                 }
                 else
                 {
@@ -177,9 +191,11 @@ namespace QuantoDemoraApi.Repository
                 Usuario usuario = await _context.Usuarios
                     .FirstOrDefaultAsync(x => x.IdUsuario == u.IdUsuario);
 
-                // Retorna 500, porque?
+                if (u.Email == usuario.Email)
+                    throw new Exception("Escolha um e-mail diferente do atual.");
+
                 if (await VerificarEmailExistente(u.Email) is true)
-                    throw new Exception("O e-mail informado já está em uso");
+                    throw new Exception("O e-mail informado já está em uso.");
 
                 usuario.Email = u.Email;
 
@@ -203,12 +219,14 @@ namespace QuantoDemoraApi.Repository
             {
                 Usuario usuario = await _context.Usuarios
                     .FirstOrDefaultAsync(x => x.NomeUsuario.ToLower().Equals(creds.NomeUsuario.ToLower()));
-                    // .FirstOrDefaultAsync(x => x.Email.ToLower().Equals(creds.Email.ToLower()));
 
-                // Retorna 500, porque?
                 if (usuario == null)
                 {
-                    throw new Exception("Usuário não encontrado");
+                    throw new Exception("Usuário não encontrado.");
+                }
+                else if (creds.PasswordString.Length < 6)
+                {
+                    throw new Exception("A senha deve conter no mínimo 6 caracteres.");
                 }
                 else
                 {
@@ -228,6 +246,7 @@ namespace QuantoDemoraApi.Repository
             }
         }
 
+        // O PROFESSOR LUIZ AINDA VAI ENSINAR A UTILIZAÇÃO DESSE RECURSO
         public async Task<Usuario> AtualizarLocalizacaoAsync(Usuario u)
         {
             try
@@ -260,10 +279,11 @@ namespace QuantoDemoraApi.Repository
                 Usuario usuario = await _context.Usuarios
                     .FirstOrDefaultAsync(x => x.IdUsuario == usuarioId);
 
+                if(usuario == null)
+                    throw new Exception("Usuário não encontrado, favor conferir o id informado.");
+
                 _context.Usuarios.Remove(usuario);
-
                 await _context.SaveChangesAsync();
-
                 return usuario;
             }
             catch (Exception ex)
@@ -273,7 +293,6 @@ namespace QuantoDemoraApi.Repository
             }
         }
 
-        // Verificar porque não está dando certo a validação abaixo nos métodos
         private async Task<bool> VerificarNomeUsuarioExistente(string nomeUsuario)
         {
             if (await _context.Usuarios.AnyAsync(x => x.NomeUsuario.ToLower() == nomeUsuario.ToLower()))
@@ -283,7 +302,6 @@ namespace QuantoDemoraApi.Repository
             return false;
         }
 
-        // Verificar porque não está dando certo a validação abaixo nos métodos
         private async Task<bool> VerificarEmailExistente(string emailUsuario)
         {
             if (await _context.Usuarios.AnyAsync(x => x.Email.ToLower() == emailUsuario.ToLower()))

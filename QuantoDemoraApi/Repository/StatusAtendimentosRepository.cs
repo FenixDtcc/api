@@ -34,7 +34,11 @@ namespace QuantoDemoraApi.Repository
             try
             {
                 StatusAtendimento statusAtendimento = await _context.StatusAtendimentos
-                    .FirstOrDefaultAsync(x => x.IdStatusAtendimento == statusAtendimentoId);    
+                    .FirstOrDefaultAsync(x => x.IdStatusAtendimento == statusAtendimentoId);
+
+                if (statusAtendimento == null)
+                    throw new Exception("Status do atendimento não encontrado, favor conferir o id informado.");
+
                 return statusAtendimento;
             }
             catch (Exception ex)

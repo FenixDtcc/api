@@ -1,5 +1,6 @@
 ﻿using log4net;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using QuantoDemoraApi.Data;
 using QuantoDemoraApi.Models;
 using QuantoDemoraApi.Repository.Interfaces;
@@ -36,6 +37,10 @@ namespace QuantoDemoraApi.Repository
             {
                 List<Contato> lista = await _context.Contatos
                     .Where(x => x.IdHospital == hospitalId).ToListAsync();
+
+                if (lista.IsNullOrEmpty())
+                    throw new Exception("Hospital não encontrado, favor conferir o id informado.");
+
                 return lista;
             }
             catch (Exception ex)

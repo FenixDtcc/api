@@ -1,2 +1,0 @@
-Validar com o professor os métodos Post, Put e Delete.
-Ver as anotações que fiz sobre algumas validações que não saíram como o esperado, todas retornam código 500 ao invés de retornar a mensagem do throw!

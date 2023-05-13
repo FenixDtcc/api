@@ -35,6 +35,10 @@ namespace QuantoDemoraApi.Repository
             {
                 Associado associado = await _context.Associados
                     .FirstOrDefaultAsync(x => x.IdAssociado == associadoId);
+
+                if (associado == null)
+                    throw new Exception("Associado(a) não encontrado(a), favor conferir o id informado.");
+
                 return associado;
             }
             catch (Exception ex)

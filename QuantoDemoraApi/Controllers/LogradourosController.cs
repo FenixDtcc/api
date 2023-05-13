@@ -1,5 +1,6 @@
 using log4net;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using QuantoDemoraApi.Models;
 using QuantoDemoraApi.Repository.Interfaces;
 
@@ -42,16 +43,22 @@ namespace QuantoDemoraApi.Controllers
             try
             {
                 Logradouro logradouro = await _logradourosRepository.GetByIdAsync(logradouroId);    
-                if (logradouro == null)
-                {
-                    return NotFound();
-                }
                 return Ok(logradouro);
+            }
+            catch (SqlException ex)
+            {
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
             catch (Exception ex)
             {
                 _logger.Error(ex);
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return NotFound(ex.Message);
             }
         }
     }

@@ -1,5 +1,6 @@
 using log4net;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using QuantoDemoraApi.Models;
 using QuantoDemoraApi.Repository.Interfaces;
 
@@ -42,18 +43,23 @@ namespace QuantoDemoraApi.Controllers
             try
             {
                 IdentificacaoAtendimento identificacaoAtendimento = await _identificacaoAtendimentosRepository.GetByIdAsync(identificacaoAtendimentoId);
-                if (identificacaoAtendimento == null)
-                {
-                    return NotFound();
-                }
                 return Ok(identificacaoAtendimento);
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 _logger.Error(ex);
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
+            catch (InvalidOperationException ex)
+            {
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+                return NotFound(ex.Message);
+            }
         }
     }
 }
-

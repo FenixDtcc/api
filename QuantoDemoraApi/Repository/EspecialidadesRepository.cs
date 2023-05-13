@@ -35,6 +35,10 @@ namespace QuantoDemoraApi.Repository
             {
                 Especialidade especialidade = await _context.Especialidades
                     .FirstOrDefaultAsync(x => x.IdEspecialidade == especialidadeId);
+
+                if (especialidade == null)
+                    throw new Exception("Especialidade não encontrada, favor conferir o id informado.");
+
                 return especialidade;
             }
             catch (Exception ex)

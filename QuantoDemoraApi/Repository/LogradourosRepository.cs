@@ -35,6 +35,10 @@ namespace QuantoDemoraApi.Repository
             {
                 Logradouro logradouro = await _context.Logradouros
                     .FirstOrDefaultAsync(x => x.IdLogradouro == logradouroId);
+
+                if (logradouro == null)
+                    throw new Exception("Logradouro não encontrado, favor conferir o id informado.");
+
                 return logradouro;
             }
             catch (Exception ex)

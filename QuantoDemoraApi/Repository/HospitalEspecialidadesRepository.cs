@@ -40,6 +40,10 @@ namespace QuantoDemoraApi.Repository
                     .Include(he => he.HospitalEspecialidades)
                     .ThenInclude(e => e.Especialidade)
                     .FirstOrDefaultAsync(x => x.IdHospital == hospitalId);
+
+                if (hospital == null)
+                    throw new Exception("Hospital não encontrado, favor conferir o id informado.");
+
                 return hospital;
             }
             catch (Exception ex)

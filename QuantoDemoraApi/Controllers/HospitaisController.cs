@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using QuantoDemoraApi.Models;
 using log4net;
 using QuantoDemoraApi.Repository.Interfaces;
+using Microsoft.Data.SqlClient;
 
 namespace QuantoDemoraApi.Controllers
 {
@@ -41,17 +42,23 @@ namespace QuantoDemoraApi.Controllers
         {
             try
             {
-                Hospital hospital = await _hospitaisRepository.GetByIdAsync(hospitalId);    
-                if (hospital == null)
-                {
-                    return NotFound();
-                }
+                Hospital hospital = await _hospitaisRepository.GetByIdAsync(hospitalId);
                 return Ok(hospital);
+            }
+            catch (SqlException ex)
+            {
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
             catch (Exception ex)
             {
                 _logger.Error(ex);
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return NotFound(ex.Message);
             }
         }
     }

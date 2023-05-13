@@ -35,6 +35,10 @@ namespace QuantoDemoraApi.Repository
             {
                 Evento evento = await _context.Eventos
                     .FirstOrDefaultAsync(x => x.IdEvento == eventoId);
+
+                if (evento == null)
+                    throw new Exception("Evento não encontrado, favor conferir o id informado.");
+
                 return evento;
             }
             catch (Exception ex)

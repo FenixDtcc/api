@@ -47,16 +47,22 @@ namespace QuantoDemoraApi.Controllers
             try
             {
                 Usuario usuario = await _usuariosRepository.GetByIdAsync(usuarioId);
-                if (usuario == null)
-                {
-                    return NotFound();
-                }
                 return Ok(usuario);
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 _logger.Error(ex);
                 return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+            catch(Exception ex)
+            {
+                _logger.Error(ex);
+                return NotFound(ex.Message);
             }
         }
 
@@ -69,16 +75,22 @@ namespace QuantoDemoraApi.Controllers
             try
             {
                 Usuario usuario = await _usuariosRepository.GetByNameAsync(nomeUsuario);
-                if (usuario == null)
-                {
-                    return NotFound();
-                }
                 return Ok(usuario);
+            }
+            catch (SqlException ex)
+            {
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
             catch (Exception ex)
             {
                 _logger.Error(ex);
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return NotFound(ex.Message);
             }
         }
 
@@ -94,17 +106,6 @@ namespace QuantoDemoraApi.Controllers
                 Usuario usuario = await _usuariosRepository.CadastrarAdminAsync(ua);
                 return Created("Cadastro Admin", ua.IdUsuario);
             }
-            /*catch (HttpRequestException ex)
-            {
-                if ((int)ex.StatusCode == 500)
-                {
-                    _logger.Error(ex);
-                    return StatusCode(StatusCodes.Status500InternalServerError);
-                }
-
-                _logger.Error(ex);
-                throw;
-            }*/
             catch(SqlException ex)
             {
                 _logger.Error(ex);
@@ -113,8 +114,7 @@ namespace QuantoDemoraApi.Controllers
             catch (InvalidOperationException ex)
             {
                 _logger.Error(ex);
-                //return StatusCode(StatusCodes.Status500InternalServerError);
-                return StatusCode(StatusCodes.Status404NotFound);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
             catch (Exception ex)
             {
@@ -135,15 +135,20 @@ namespace QuantoDemoraApi.Controllers
                 Usuario usuario = await _usuariosRepository.CadastrarAsync(u);
                 return Created("Cadastro Usuario", u.IdUsuario);
             }
-            catch (BadHttpRequestException ex)
+            catch (SqlException ex)
             {
                 _logger.Error(ex);
-                return BadRequest(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
             catch (Exception ex)
             {
                 _logger.Error(ex);
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return BadRequest(ex.Message);
             }
         }
 
@@ -159,15 +164,20 @@ namespace QuantoDemoraApi.Controllers
                 Usuario usuario = await _usuariosRepository.AutenticarAsync(creds);
                 return Ok(usuario);
             }
-            catch (BadHttpRequestException ex)
+            catch (SqlException ex)
             {
                 _logger.Error(ex);
-                return BadRequest(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
             catch (Exception ex)
             {
                 _logger.Error(ex);
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return BadRequest(ex.Message);
             }
         }
 
@@ -182,15 +192,20 @@ namespace QuantoDemoraApi.Controllers
                 Usuario usuario = await _usuariosRepository.AlterarEmailAsync(u);
                 return Ok(u.IdUsuario);
             }
-            catch (BadHttpRequestException ex)
+            catch (SqlException ex)
             {
                 _logger.Error(ex);
-                return BadRequest(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
             catch (Exception ex)
             {
                 _logger.Error(ex);
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return BadRequest(ex.Message);
             }
         }
 
@@ -205,15 +220,20 @@ namespace QuantoDemoraApi.Controllers
                 Usuario usuario = await _usuariosRepository.AlterarSenhaAsync(creds);
                 return Ok(usuario.IdUsuario);
             }
-            catch (BadHttpRequestException ex)
+            catch (SqlException ex)
             {
                 _logger.Error(ex);
-                return BadRequest(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
             catch (Exception ex)
             {
                 _logger.Error(ex);
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return BadRequest(ex.Message);
             }
         }
 
@@ -229,20 +249,26 @@ namespace QuantoDemoraApi.Controllers
                 Usuario usuario = await _usuariosRepository.AtualizarLocalizacaoAsync(u);
                 return Ok(u.IdUsuario);
             }
-            catch (BadHttpRequestException ex)
-            {
-                _logger.Error(ex);
-                return BadRequest(ex.Message);
-            }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 _logger.Error(ex);
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
+            catch (InvalidOperationException ex)
+            {
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+                return BadRequest(ex.Message);
+            }
         }
 
+        // [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpDelete("{usuarioId}")]
         public async Task<IActionResult> Deletar(int usuarioId)
@@ -254,15 +280,20 @@ namespace QuantoDemoraApi.Controllers
                 // OU
                 return NoContent();
             }
-            catch (BadHttpRequestException ex)
+            catch (SqlException ex)
             {
                 _logger.Error(ex);
-                return BadRequest(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
             catch (Exception ex)
             {
                 _logger.Error(ex);
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return NotFound(ex.Message);
             }
         }
     }

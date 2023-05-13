@@ -35,6 +35,10 @@ namespace QuantoDemoraApi.Repository
             {
                 IdentificacaoAtendimento identificacaoAtendimento = await _context.IdentificacaoAtendimentos
                     .FirstOrDefaultAsync(x => x.IdIdentificacaoAtendimento == identificacaoAtendimentoId);
+                
+                if (identificacaoAtendimento == null)
+                    throw new Exception("Identificação do atendimento não encontrada, favor conferir o id informado.");
+
                 return identificacaoAtendimento;
             }
             catch (Exception ex)
