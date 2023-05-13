@@ -237,6 +237,54 @@ CONSTRAINT Associado_PK PRIMARY KEY (idAssociado)
 
 INSERT INTO Associado VALUES (1, 'Aparecida', 'Fabiana Lopes', '870.853.739-97', 'F', '11', '999282363', 'aparecida_fabiana_lopes@gmail.com');
 INSERT INTO Associado VALUES (2, 'Osvaldo', 'Diego Dias', '761.763.293-29', 'M', '11', '991879663', 'osvaldo_dias@outlook.com');
+INSERT INTO Associado VALUES (3, 'Letícia Giovanna', 'Fabiana de Paula', '974.178.318-34', 'F', '42', '997628282', 'leticia-depaula73@megamega.com.br');
+INSERT INTO Associado VALUES (4, 'Heloise','Daiane Almada','847.591.050-50','F', '85', '981267734', 'heloisedaianealmada@victorseguros.com.br');
+INSERT INTO Associado VALUES (5, 'Natália Cecília','Analu Drumond','030.788.044-37','F','31','995333719','nataliaceciliadrumond@netsite.com.br');
+INSERT INTO Associado VALUES (6, 'Enzo','Gabriel Gomes','604.361.092-20','M','69','9853-8655','enzo_gomes@br.nestle.com');
+INSERT INTO Associado VALUES (7, 'Aurora Andreia','Daiane Dias','132.609.932-90','F','95','996572911','aurora-dias83@daruma.com.br');
+INSERT INTO Associado VALUES (8, 'Bruno','Alexandre Almeida','054.364.596-76','M','82','997367614','bruno_almeida@bemarius.com.br');
+INSERT INTO Associado VALUES (9, 'Gabriela Sara','Natália Carvalho','651.640.897-18','F','93','983954109','gabriela_carvalho@vuyu.es');
+INSERT INTO Associado VALUES (10, 'Murilo Erick','Noah Fogaça','170.233.036-26','M','73','993745759','murilo-fogaca97@unipsicotaubate.com.br');
+INSERT INTO Associado VALUES (11, 'Fernando Henry','Manuel Nunes','818.917.180-10','M','62','997101926','fernando.henry.nunes@hotelruby.com.br');
+INSERT INTO Associado VALUES (12, 'Gabrielly','Isadora Gomes','880.763.260-87','F','71','996695317','gabrielly_gomes@pronta.com.br');
+INSERT INTO Associado VALUES (13, 'Rafael Igor','José Nunes','339.187.300-00','M','81','988042296','rafael.igor.nunes@nonesiglio.com.br');
+INSERT INTO Associado VALUES (14, 'Josefa','Raquel Galvão','601.830.953-08','F','77','981311550','josefa_galvao@delfrateinfo.com.br');
+INSERT INTO Associado VALUES (15, 'Giovanni','Pietro da Luz','869.038.289-58','M','81','998618265','giovanni_pietro_daluz@dafitex.com.br');
+INSERT INTO Associado VALUES (16, 'Adriana Maya','Camila Barbosa','644.866.303-78','F','61','998004883','adriana.maya.barbosa@corpoclinica.com.br');
+INSERT INTO Associado VALUES (17, 'Arthur Kauê','Benício Lima','819.069.000-00','M','61','985417353','arthur_kaue_lima@centroin.com.br');
+INSERT INTO Associado VALUES (18, 'Cláudio','Juan Viana','021.841.486-28','M','11','982786102','claudio-viana86@ligananet.com.br');
+INSERT INTO Associado VALUES (19, 'Elza','Josefa Nascimento','177.655.675-51','F','92','981190457','elzajosefanascimento@terra.com.br');
+INSERT INTO Associado VALUES (20, 'Helena','Rayssa Aragão','816.041.522-22','F','86','992844505','helena-aragao89@orthoi.com.br');
+INSERT INTO Associado VALUES (21, 'Isabela','Manuela Nascimento','121.641.642-70','F','48','987322342','isabelamanuelanascimento@novaes.me');
+INSERT INTO Associado VALUES (22, 'Caio','Matheus da Cunha','376.229.560-31','M','14','982183269','caio.matheus.dacunha@unimedrio.com.br');
+INSERT INTO Associado VALUES (23, 'Maya','Ayla Nogueira','501.601.808-13','F','65','989396030','maya_ayla_nogueira@saojose.biz');
+INSERT INTO Associado VALUES (24, 'Gael','Bento Ferreira','219.939.532-48','M','98','986534700','gael.bento.ferreira@arganet.com.br');
+INSERT INTO Associado VALUES (25, 'Sônia','Josefa Almeida','Josefa Almeida','F','91','995832030','sonia_josefa_almeida@mourafiorito.com');
+INSERT INTO Associado VALUES (26, 'Gabrielly Clarice','Alana Novaes','807.991.814-71','F','27','986786354','gabrielly_clarice_novaes@caej.com.br');
+INSERT INTO Associado VALUES (27, 'Beatriz','Mariana Melo','450.133.482-77','F','63','988891558','beatrizmarianamelo@escritoriogold.com.br');
+INSERT INTO Associado VALUES (28, 'Letícia','Marina Gomes','139.460.510-22','F','68','999371443','leticiamarinagomes@dinamicaconsultoria.com');
+INSERT INTO Associado VALUES (29, 'Marcos Vinicius','André Pires','925.415.476-84','M','61','991876948','marcos_pires@gtx.ag');
+INSERT INTO Associado VALUES (30, 'Geraldo Pietro','Nathan da Conceição','644.473.595-53','M','67','998613270','geraldo.pietro.daconceicao@yahoo.co.uk');
+INSERT INTO Associado VALUES (31, 'Vitória Laura','Caroline Santos','567.477.713-62','F','85','999845965','vitoria-santos78@ideiaviva.com.br');
+INSERT INTO Associado VALUES (32, 'Julia','Louise Souza','466.248.688-21','F','61','982418662','julia.louise.souza@nhrtaxiaereo.com');
+INSERT INTO Associado VALUES (33, 'Emily Heloisa','Isabelle Caldeira','069.382.895-14','F','62','993378427','emily.heloisa.caldeira@toysbrasil.com.br');
+INSERT INTO Associado VALUES (34, 'Enzo','Leandro Moura','152.499.378-61','M','65','998334228','enzo.leandro.moura@andrepires.com.br');
+INSERT INTO Associado VALUES (35, 'Sandra','Isabella da Cunha','660.006.963-53','F','51','997085006','sandra.isabella.dacunha@gmai.com');
+INSERT INTO Associado VALUES (36, 'Danilo','Márcio Nogueira','737.696.988-86','M','84','986518944','danilomarcionogueira@queirozgalvao.com');
+INSERT INTO Associado VALUES (37, 'Manuel Márcio','Osvaldo Dias','022.353.899-02','M','63','998396883','manuel_dias@tkk.com.br');
+INSERT INTO Associado VALUES (38, 'Oliver Guilherme','Vicente da Conceição','018.981.278-83','M','68','994395423','oliver_daconceicao@modus.com.br');
+INSERT INTO Associado VALUES (39, 'Carla','Vitória Jesus','960.847.563-52','F','82','991059039','carla_jesus@alway.com.br');
+INSERT INTO Associado VALUES (40, 'Sérgio Lucas','Benício Carvalho','353.307.932-54','M','66','981691617','sergiolucascarvalho@fcacomputers.com.br');
+INSERT INTO Associado VALUES (41, 'Jaqueline','Renata Ribeiro','083.719.061-45','F','69','987248820','jaqueline-ribeiro98@cathedranet.com.br');
+INSERT INTO Associado VALUES (42, 'Miguel','Iago Farias','530.616.100-65','M','91','992750497','miguel-farias99@construtorastaizabel.com.br');
+INSERT INTO Associado VALUES (43, 'Renato','Bernardo Pires','323.119.480-67','M','84','983700951','renato.bernardo.pires@focoreducao.com.br');
+INSERT INTO Associado VALUES (44, 'Sandra','Fátima Sales','392.484.570-02','F','21','997433565','sandra_fatima_sales@formigueiromaquinas.com.br');
+INSERT INTO Associado VALUES (45, 'Louise Luciana','Cristiane Cavalcanti','855.964.170-09','M','85','981870570','louise.luciana.cavalcanti@duoarq.com');
+INSERT INTO Associado VALUES (46, 'Lara','Eliane Vieira','709.195.203-08','F','63','984687964','lara_eliane_vieira@myself.com');
+INSERT INTO Associado VALUES (47, 'Sebastiana Larissa','Adriana Baptista','190.922.390-54','F','79','982048315','sebastianalarissabaptista@sigtechbr.com');
+INSERT INTO Associado VALUES (48, 'Alice','Aline Pereira','625.619.251-61','F','98','985681078','alice_pereira@provale.com.br');
+INSERT INTO Associado VALUES (49, 'Luan','César Carvalho','511.200.045-78','M','86','999216444','luan.cesar.carvalho@salera.com.br');
+INSERT INTO Associado VALUES (50, 'Lara Sebastiana','Ester Almeida','465.852.659-04','F','47','986906078','lara_almeida@leonardocordeiro.com');
 
 GO
 
