@@ -212,6 +212,34 @@ namespace QuantoDemoraApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [HttpPut("AlterarNome")]
+        public async Task<IActionResult> AlterarNome(Usuario u)
+        {
+            try
+            {
+                Usuario usuario = await _usuariosRepository.AlterarNomeAsync(u);
+                return Ok(u.IdUsuario);
+            }
+            catch (SqlException ex)
+            {
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPut("AlterarSenha")]
         public async Task<IActionResult> AlterarSenha(Usuario creds)
         {
@@ -270,14 +298,11 @@ namespace QuantoDemoraApi.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [HttpDelete("{usuarioId}")]
-        public async Task<IActionResult> Deletar(int usuarioId)
+        public async Task<IActionResult> Deletar(Usuario u)
         {
             try
             {
-                Usuario usuario = await _usuariosRepository.DeletarAsync(usuarioId);
-                // return Ok(usuario.IdUsuario);
-                // OU
+                Usuario usuario = await _usuariosRepository.DeletarAsync(u);
                 return NoContent();
             }
             catch (SqlException ex)

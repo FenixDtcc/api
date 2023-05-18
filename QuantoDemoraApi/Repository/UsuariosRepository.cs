@@ -213,12 +213,41 @@ namespace QuantoDemoraApi.Repository
             }
         }
 
+        public async Task<Usuario> AlterarNomeAsync(Usuario u)
+        {
+            try
+            {
+                Usuario usuario = await _context.Usuarios
+                    .FirstOrDefaultAsync(x => x.IdUsuario == u.IdUsuario);
+
+                if (u.NomeUsuario == usuario.NomeUsuario)
+                    throw new Exception("Escolha um nome de usuário diferente do atual.");
+
+                if (await VerificarNomeUsuarioExistente(u.NomeUsuario) is true)
+                    throw new Exception("O nome de usuário informado já está em uso.");
+
+                usuario.NomeUsuario = u.NomeUsuario;
+
+                var attach = _context.Attach(usuario);
+                attach.Property(x => x.IdUsuario).IsModified = false;
+                attach.Property(x => x.NomeUsuario).IsModified = true;
+
+                await _context.SaveChangesAsync();
+                return usuario;
+            }
+            catch (Exception ex)
+            {
+                _logger.Info(ex);
+                throw;
+            }
+        }
+
         public async Task<Usuario> AlterarSenhaAsync(Usuario creds)
         {
             try
             {
                 Usuario usuario = await _context.Usuarios
-                    .FirstOrDefaultAsync(x => x.NomeUsuario.ToLower().Equals(creds.NomeUsuario.ToLower()));
+                    .FirstOrDefaultAsync(x => x.IdUsuario == creds.IdUsuario);
 
                 if (usuario == null)
                 {
@@ -272,15 +301,18 @@ namespace QuantoDemoraApi.Repository
             }
         }
 
-        public async Task<Usuario> DeletarAsync(int usuarioId)
+        public async Task<Usuario> DeletarAsync(Usuario u)
         {
             try
             {
                 Usuario usuario = await _context.Usuarios
-                    .FirstOrDefaultAsync(x => x.IdUsuario == usuarioId);
+                    .FirstOrDefaultAsync(x => x.IdUsuario == u.IdUsuario);
 
-                if(usuario == null)
+                if (usuario == null)
                     throw new Exception("Usuário não encontrado, favor conferir o id informado.");
+
+                if (!Criptografia.VerificarPasswordHash(u.PasswordString, usuario.PasswordHash, usuario.PasswordSalt))
+                    throw new Exception("Senha incorreta.");
 
                 _context.Usuarios.Remove(usuario);
                 await _context.SaveChangesAsync();

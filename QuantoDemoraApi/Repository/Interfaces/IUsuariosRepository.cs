@@ -11,8 +11,9 @@ namespace QuantoDemoraApi.Repository.Interfaces
         Task<Usuario> CadastrarAsync(Usuario usuario);
         Task<Usuario> AutenticarAsync(Usuario creds);
         Task<Usuario> AlterarEmailAsync(Usuario email);
+        Task<Usuario> AlterarNomeAsync(Usuario nome);
         Task<Usuario> AlterarSenhaAsync(Usuario senha);
         Task<Usuario> AtualizarLocalizacaoAsync(Usuario usuario);
-        Task<Usuario> DeletarAsync(int usuarioId);
+        Task<Usuario> DeletarAsync(Usuario u);
     }
 }
