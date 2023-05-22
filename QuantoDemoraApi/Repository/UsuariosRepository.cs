@@ -301,22 +301,16 @@ namespace QuantoDemoraApi.Repository
             }
         }
 
-        public async Task<Usuario> DeletarAsync(Usuario u)
+        public async Task<int> DeletarAsync(int usuarioId)
         {
             try
             {
                 Usuario usuario = await _context.Usuarios
-                    .FirstOrDefaultAsync(x => x.IdUsuario == u.IdUsuario);
-
-                if (usuario == null)
-                    throw new Exception("Usuário não encontrado, favor conferir o id informado.");
-
-                if (!Criptografia.VerificarPasswordHash(u.PasswordString, usuario.PasswordHash, usuario.PasswordSalt))
-                    throw new Exception("Senha incorreta.");
+                    .FirstOrDefaultAsync(x => x.IdUsuario == usuarioId);
 
                 _context.Usuarios.Remove(usuario);
-                await _context.SaveChangesAsync();
-                return usuario;
+                int linhasAfetadas = await _context.SaveChangesAsync();
+                return linhasAfetadas;
             }
             catch (Exception ex)
             {

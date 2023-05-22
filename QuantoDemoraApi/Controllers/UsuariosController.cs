@@ -59,7 +59,7 @@ namespace QuantoDemoraApi.Controllers
                 _logger.Error(ex);
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.Error(ex);
                 return NotFound(ex.Message);
@@ -106,7 +106,7 @@ namespace QuantoDemoraApi.Controllers
                 Usuario usuario = await _usuariosRepository.CadastrarAdminAsync(ua);
                 return Created("Cadastro Admin", ua.IdUsuario);
             }
-            catch(SqlException ex)
+            catch (SqlException ex)
             {
                 _logger.Error(ex);
                 return StatusCode(StatusCodes.Status500InternalServerError);
@@ -294,16 +294,18 @@ namespace QuantoDemoraApi.Controllers
             }
         }
 
-        // [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        //[ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Deletar(Usuario u)
+        [HttpDelete("Deletar/{usuarioId}")]
+        public async Task<IActionResult> Deletar(int usuarioId)
         {
             try
             {
-                Usuario usuario = await _usuariosRepository.DeletarAsync(u);
-                return NoContent();
+                int linhasAfetadas = await _usuariosRepository.DeletarAsync(usuarioId);
+                // return NoContent();
+                return Ok(linhasAfetadas);
             }
             catch (SqlException ex)
             {
