@@ -181,6 +181,35 @@ namespace QuantoDemoraApi.Controllers
             }
         }
 
+        /* TENTATIVA DE CRIAR UM ÚNICO MÉTODO PARA TODAS AS ALTERAÇÕES, NÃO FUNCIONOU BEM AS VALIDAÇÕES.
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [HttpPut("Alterar")]
+        public async Task<IActionResult> AlterarCadastro(Usuario u)
+        {
+            try
+            {
+                int linhasAfetadas = await _usuariosRepository.AlterarCadastroAsync(u);
+                return Ok(linhasAfetadas);
+            }
+            catch (SqlException ex)
+            {
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+                return BadRequest(ex.Message);
+            }
+        }*/
+
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -189,8 +218,8 @@ namespace QuantoDemoraApi.Controllers
         {
             try
             {
-                Usuario usuario = await _usuariosRepository.AlterarEmailAsync(u);
-                return Ok(u.IdUsuario);
+                int linhasAfetadas = await _usuariosRepository.AlterarEmailAsync(u);
+                return Ok(linhasAfetadas);
             }
             catch (SqlException ex)
             {
@@ -217,8 +246,8 @@ namespace QuantoDemoraApi.Controllers
         {
             try
             {
-                Usuario usuario = await _usuariosRepository.AlterarNomeAsync(u);
-                return Ok(u.IdUsuario);
+                int linhasAfetadas = await _usuariosRepository.AlterarNomeAsync(u);
+                return Ok(linhasAfetadas);
             }
             catch (SqlException ex)
             {
@@ -245,8 +274,8 @@ namespace QuantoDemoraApi.Controllers
         {
             try
             {
-                Usuario usuario = await _usuariosRepository.AlterarSenhaAsync(creds);
-                return Ok(usuario.IdUsuario);
+                int linhasAfetadas = await _usuariosRepository.AlterarSenhaAsync(creds);
+                return Ok(linhasAfetadas);
             }
             catch (SqlException ex)
             {
@@ -274,8 +303,8 @@ namespace QuantoDemoraApi.Controllers
         {
             try
             {
-                Usuario usuario = await _usuariosRepository.AtualizarLocalizacaoAsync(u);
-                return Ok(u.IdUsuario);
+                int linhasAfetadas = await _usuariosRepository.AtualizarLocalizacaoAsync(u);
+                return Ok(linhasAfetadas);
             }
             catch (SqlException ex)
             {
@@ -295,7 +324,6 @@ namespace QuantoDemoraApi.Controllers
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
-        //[ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpDelete("Deletar/{usuarioId}")]
@@ -304,7 +332,6 @@ namespace QuantoDemoraApi.Controllers
             try
             {
                 int linhasAfetadas = await _usuariosRepository.DeletarAsync(usuarioId);
-                // return NoContent();
                 return Ok(linhasAfetadas);
             }
             catch (SqlException ex)

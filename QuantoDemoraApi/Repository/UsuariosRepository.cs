@@ -184,12 +184,70 @@ namespace QuantoDemoraApi.Repository
             }
         }
 
-        public async Task<Usuario> AlterarEmailAsync(Usuario u)
+        /* TENTATIVA DE CRIAR UM ÚNICO MÉTODO PARA TODAS AS ALTERAÇÕES, NÃO FUNCIONOU BEM AS VALIDAÇÕES.
+        public async Task<int> AlterarCadastroAsync(Usuario u)
         {
             try
             {
                 Usuario usuario = await _context.Usuarios
                     .FirstOrDefaultAsync(x => x.IdUsuario == u.IdUsuario);
+
+                if (usuario == null)
+                    throw new Exception("Usuário não encontrado.");
+
+                if (u.NomeUsuario == usuario.NomeUsuario)
+                    throw new Exception("Escolha um nome de usuário diferente do atual.");
+
+                if (await VerificarNomeUsuarioExistente(u.NomeUsuario) is true)
+                    throw new Exception("O nome de usuário informado já está em uso.");
+
+                usuario.NomeUsuario = u.NomeUsuario;
+
+                if (u.Email == usuario.Email)
+                    throw new Exception("Escolha um e-mail diferente do atual.");
+
+                if (await VerificarEmailExistente(u.Email) is true)
+                    throw new Exception("O e-mail informado já está em uso.");
+
+                usuario.Email = u.Email;
+
+                var attach = _context.Attach(usuario);
+                attach.Property(x => x.IdUsuario).IsModified = false;
+                attach.Property(x => x.NomeUsuario).IsModified = true;
+                attach.Property(x => x.Email).IsModified = true;
+
+                if (u.PasswordString.Length < 6)
+                {
+                    throw new Exception("A senha deve conter no mínimo 6 caracteres.");
+                }
+                else
+                {
+                    Criptografia.CriarPasswordHash(u.PasswordString, out byte[] hash, out byte[] salt);
+                    usuario.PasswordHash = hash;
+                    usuario.PasswordSalt = salt;
+
+                    _context.Usuarios.Update(usuario);
+                }
+
+                int linhasAfetadas = await _context.SaveChangesAsync();
+                return linhasAfetadas;
+            }
+            catch (Exception ex)
+            {
+                _logger.Info(ex);
+                throw;
+            }
+        }*/
+
+        public async Task<int> AlterarEmailAsync(Usuario u)
+        {
+            try
+            {
+                Usuario usuario = await _context.Usuarios
+                    .FirstOrDefaultAsync(x => x.IdUsuario == u.IdUsuario);
+
+                if (usuario == null)
+                    throw new Exception("Usuário não encontrado.");
 
                 if (u.Email == usuario.Email)
                     throw new Exception("Escolha um e-mail diferente do atual.");
@@ -203,8 +261,10 @@ namespace QuantoDemoraApi.Repository
                 attach.Property(x => x.IdUsuario).IsModified = false;
                 attach.Property(x => x.Email).IsModified = true;
 
+                // _context.Usuarios.Update(usuario); Sem Attach
+
                 int linhasAfetadas = await _context.SaveChangesAsync();
-                return usuario;
+                return linhasAfetadas;
             }
             catch (Exception ex)
             {
@@ -213,12 +273,15 @@ namespace QuantoDemoraApi.Repository
             }
         }
 
-        public async Task<Usuario> AlterarNomeAsync(Usuario u)
+        public async Task<int> AlterarNomeAsync(Usuario u)
         {
             try
             {
                 Usuario usuario = await _context.Usuarios
                     .FirstOrDefaultAsync(x => x.IdUsuario == u.IdUsuario);
+
+                if (usuario == null)
+                    throw new Exception("Usuário não encontrado.");
 
                 if (u.NomeUsuario == usuario.NomeUsuario)
                     throw new Exception("Escolha um nome de usuário diferente do atual.");
@@ -232,8 +295,10 @@ namespace QuantoDemoraApi.Repository
                 attach.Property(x => x.IdUsuario).IsModified = false;
                 attach.Property(x => x.NomeUsuario).IsModified = true;
 
-                await _context.SaveChangesAsync();
-                return usuario;
+                // _context.Usuarios.Update(usuario); Sem Attach
+
+                int linhasAfetadas = await _context.SaveChangesAsync();
+                return linhasAfetadas;
             }
             catch (Exception ex)
             {
@@ -242,30 +307,30 @@ namespace QuantoDemoraApi.Repository
             }
         }
 
-        public async Task<Usuario> AlterarSenhaAsync(Usuario creds)
+        public async Task<int> AlterarSenhaAsync(Usuario u)
         {
             try
             {
                 Usuario usuario = await _context.Usuarios
-                    .FirstOrDefaultAsync(x => x.IdUsuario == creds.IdUsuario);
+                    .FirstOrDefaultAsync(x => x.IdUsuario == u.IdUsuario);
 
                 if (usuario == null)
                 {
                     throw new Exception("Usuário não encontrado.");
                 }
-                else if (creds.PasswordString.Length < 6)
+                else if (u.PasswordString.Length < 6)
                 {
                     throw new Exception("A senha deve conter no mínimo 6 caracteres.");
                 }
                 else
                 {
-                    Criptografia.CriarPasswordHash(creds.PasswordString, out byte[] hash, out byte[] salt);
+                    Criptografia.CriarPasswordHash(u.PasswordString, out byte[] hash, out byte[] salt);
                     usuario.PasswordHash = hash;
                     usuario.PasswordSalt = salt;
 
                     _context.Usuarios.Update(usuario);
-                    await _context.SaveChangesAsync();
-                    return usuario;
+                    int linhasAfetadas = await _context.SaveChangesAsync();
+                    return linhasAfetadas;
                 }
             }
             catch (Exception ex)
@@ -276,12 +341,15 @@ namespace QuantoDemoraApi.Repository
         }
 
         // O PROFESSOR LUIZ AINDA VAI ENSINAR A UTILIZAÇÃO DESSE RECURSO
-        public async Task<Usuario> AtualizarLocalizacaoAsync(Usuario u)
+        public async Task<int> AtualizarLocalizacaoAsync(Usuario u)
         {
             try
             {
                 Usuario usuario = await _context.Usuarios
                     .FirstOrDefaultAsync(x => x.IdUsuario == u.IdUsuario);
+
+                if (usuario == null)
+                    throw new Exception("Usuário não encontrado.");
 
                 usuario.Latitude = u.Latitude;
                 usuario.Longitude = u.Longitude;
@@ -292,7 +360,7 @@ namespace QuantoDemoraApi.Repository
                 attach.Property(x => x.Longitude).IsModified = true;
 
                 int linhasAfetadas = await _context.SaveChangesAsync();
-                return usuario;
+                return linhasAfetadas;
             }
             catch (Exception ex)
             {
@@ -307,6 +375,9 @@ namespace QuantoDemoraApi.Repository
             {
                 Usuario usuario = await _context.Usuarios
                     .FirstOrDefaultAsync(x => x.IdUsuario == usuarioId);
+
+                if (usuario == null)
+                    throw new Exception("Usuário não encontrado.");
 
                 _context.Usuarios.Remove(usuario);
                 int linhasAfetadas = await _context.SaveChangesAsync();
