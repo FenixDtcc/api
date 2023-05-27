@@ -17,6 +17,7 @@ builder.Services.AddDbContext<DataContext>(options =>
 });
 
 builder.Services.AddScoped<IAssociadosRepository, AssociadosRepository>();
+builder.Services.AddScoped<IAtendimentosRepository, AtendimentosRepository>();
 builder.Services.AddScoped<IContatosRepository, ContatosRepository>();
 builder.Services.AddScoped<IEspecialidadesRepository, EspecialidadesRepository>();
 builder.Services.AddScoped<IHospitaisRepository, HospitaisRepository>();
