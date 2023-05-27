@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace QuantoDemoraApi.Models
 {
-    [Table("Usuario")]
+    [Table("Usuarios")]
     public class Usuario
     {
         [Key]

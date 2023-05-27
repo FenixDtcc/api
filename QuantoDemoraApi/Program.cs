@@ -12,19 +12,17 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddDbContext<DataContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("ConexaoSomee"));
-    // options.UseSqlServer(builder.Configuration.GetConnectionString("ConexaoLocal"));
+    //options.UseSqlServer(builder.Configuration.GetConnectionString("ConexaoSomee"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("ConexaoLocal"));
 });
 
 builder.Services.AddScoped<IAssociadosRepository, AssociadosRepository>();
 builder.Services.AddScoped<IContatosRepository, ContatosRepository>();
 builder.Services.AddScoped<IEspecialidadesRepository, EspecialidadesRepository>();
-builder.Services.AddScoped<IEventosRepository, EventosRepository>();
 builder.Services.AddScoped<IHospitaisRepository, HospitaisRepository>();
 builder.Services.AddScoped<IHospitalEspecialidadesRepository, HospitalEspecialidadesRepository>();
 builder.Services.AddScoped<IIdentificacaoAtendimentosRepository, IdentificacaoAtendimentosRepository>();
 builder.Services.AddScoped<ILogradourosRepository, LogradourosRepository>();
-builder.Services.AddScoped<IStatusAtendimentosRepository, StatusAtendimentosRepository>();
 builder.Services.AddScoped<ITiposContatoRepository, TiposContatoRepository>();
 builder.Services.AddScoped<IUsuariosRepository, UsuariosRepository>();
 
@@ -52,8 +50,6 @@ Newtonsoft.Json.ReferenceLoopHandling.Ignore
 );
 
 builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
-//builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 var app = builder.Build();
 

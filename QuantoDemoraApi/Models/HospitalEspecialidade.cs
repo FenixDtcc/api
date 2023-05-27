@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace QuantoDemoraApi.Models
 {
-    [Table("HospitalEspecialidade")]
+    [Table("HospitalEspecialidades")]
     [PrimaryKey((nameof(IdHospital)), (nameof(IdEspecialidade)))]
     public class HospitalEspecialidade
     {

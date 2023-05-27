@@ -8,7 +8,7 @@ using QuantoDemoraApi.Models.Enums;
 
 namespace QuantoDemoraApi.Models
 {
-    [Table("Hospital")]
+    [Table("Hospitais")]
     public class Hospital
     {
         [Key]

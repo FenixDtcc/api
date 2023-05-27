@@ -8,7 +8,7 @@ using QuantoDemoraApi.Models.Enums;
 
 namespace QuantoDemoraApi.Models
 {
-    [Table("IdentificacaoAtendimento")]
+    [Table("IdentificacaoAtendimentos")]
     public class IdentificacaoAtendimento
     {
         [Key]

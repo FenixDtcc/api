@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 
 namespace QuantoDemoraApi.Models
 {
-    [Table("Associado")]
+    [Table("Associados")]
     public class Associado
     {
         [Key]
