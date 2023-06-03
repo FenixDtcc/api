@@ -43,7 +43,6 @@ namespace QuantoDemoraApi.Repository
                 //return atendimento;
 
                 int especialidade;
-                int tempo;
 
                 List<Atendimento> lista = await _context.Atendimentos
                     .Where(x => x.IdHospital == hospitalId)
