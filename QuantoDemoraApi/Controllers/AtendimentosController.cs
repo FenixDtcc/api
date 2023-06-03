@@ -47,8 +47,10 @@ namespace QuantoDemoraApi.Controllers
         {
             try
             {
-                var lista = await _atendimentosRepository.GetByIdAsync(hospitalId, especialidadeId);
-                return Ok(lista);
+                //var lista = await _atendimentosRepository.GetByIdAsync(hospitalId, especialidadeId);
+                //return Ok(lista);
+                int tempoAtendimento = await _atendimentosRepository.GetByIdAsync(hospitalId, especialidadeId);
+                return Ok(tempoAtendimento);
             }
             catch (SqlException ex)
             {

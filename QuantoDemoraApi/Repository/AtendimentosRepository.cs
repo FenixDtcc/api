@@ -30,8 +30,8 @@ namespace QuantoDemoraApi.Repository
             }
         }
 
-        //public async Task<Atendimento> GetByIdAsync(int hospitalId)
-        public async Task<IEnumerable<Atendimento>> GetByIdAsync(int hospitalId, int especialidadeId)
+        //public async Task<IEnumerable<Atendimento>> GetByIdAsync(int hospitalId, int especialidadeId)
+        public async Task<int> GetByIdAsync(int hospitalId, int especialidadeId)
         {
             try
             {
@@ -42,6 +42,9 @@ namespace QuantoDemoraApi.Repository
 
                 //return atendimento;
 
+                int especialidade;
+                int tempo;
+
                 List<Atendimento> lista = await _context.Atendimentos
                     .Where(x => x.IdHospital == hospitalId)
                     .Where(x => x.IdEspecialidade == especialidadeId)
@@ -50,7 +53,17 @@ namespace QuantoDemoraApi.Repository
                 if (lista.IsNullOrEmpty())
                     throw new Exception("Hospital/Especialidade não encontrados, favor conferir o id informado.");
 
-                return lista;
+                if (lista.Count > 0)
+                {
+                    if (hospitalId == 1 &&  especialidadeId == 1)
+                    {
+                        especialidade = lista.Count;
+                        return lista.Sum(x => x.TempoAtendimento) / especialidade;
+                    }
+                }
+
+                return 0;
+
             }
             catch (Exception ex)
             {
