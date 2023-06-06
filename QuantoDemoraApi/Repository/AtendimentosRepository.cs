@@ -70,6 +70,27 @@ namespace QuantoDemoraApi.Repository
                 throw;
             }
         }
+
+
+        public async Task<List<Atendimento>> GetByHospitalIdAsync(int hospitalId)
+        {
+            try
+            {
+                List<Atendimento> lista = await _context.Atendimentos
+                    //.Include(h => h.Hospital)
+                    //.Include(e => e.Especialidade)
+                    .Where(x => x.IdHospital == hospitalId).ToListAsync();
+
+                return lista;                
+            }
+            catch (Exception ex)
+            {
+                _logger.Info(ex);
+                throw;
+            }
+        }
+
+
     }
 }
 

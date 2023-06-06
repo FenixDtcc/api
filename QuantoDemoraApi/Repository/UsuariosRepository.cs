@@ -5,6 +5,7 @@ using QuantoDemoraApi.Data;
 using QuantoDemoraApi.Models;
 using QuantoDemoraApi.Repository.Interfaces;
 using QuantoDemoraApi.Utils;
+using System.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -167,13 +168,15 @@ namespace QuantoDemoraApi.Repository
                 }
                 else
                 {
+                    Token jwt = new Token(_configuration);
+
                     usuario.DtAcesso = LocalDateTime.HorarioBrasilia();
                     _context.Usuarios.Update(usuario);
                     await _context.SaveChangesAsync();
 
                     usuario.PasswordHash = null;
                     usuario.PasswordSalt = null;
-                    usuario.Token = CriarToken(usuario);
+                    usuario.Token = jwt.CriarToken(usuario);
                     return usuario;
                 }
             }
@@ -340,7 +343,6 @@ namespace QuantoDemoraApi.Repository
             }
         }
 
-        // O PROFESSOR LUIZ AINDA VAI ENSINAR A UTILIZAÇÃO DESSE RECURSO
         public async Task<int> AtualizarLocalizacaoAsync(Usuario u)
         {
             try
@@ -406,26 +408,6 @@ namespace QuantoDemoraApi.Repository
                 return true;
             }
             return false;
-        }
-
-        private string CriarToken(Usuario u)
-        {
-            List<Claim> claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, u.IdUsuario.ToString()),
-                new Claim(ClaimTypes.Name, u.Email),
-            };
-            SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("ConfiguracaoToken:Chave").Value));
-            SigningCredentials creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-            SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddSeconds(600),
-                SigningCredentials = creds
-            };
-            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
-            SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
         }
     }
 }

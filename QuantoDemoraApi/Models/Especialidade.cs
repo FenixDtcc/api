@@ -9,5 +9,10 @@ namespace QuantoDemoraApi.Models
         [Key]
         public int IdEspecialidade { get; set; }
         public string DsEspecialidade { get; set; }
+
+        [NotMapped]
+        public decimal TempoMedio { get; set; }
+        [NotMapped]
+        public string TempoMedioConvertido { get; set; }
     }
 }
