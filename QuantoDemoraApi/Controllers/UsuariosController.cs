@@ -181,35 +181,6 @@ namespace QuantoDemoraApi.Controllers
             }
         }
 
-        /* TENTATIVA DE CRIAR UM ÚNICO MÉTODO PARA TODAS AS ALTERAÇÕES, NÃO FUNCIONOU BEM AS VALIDAÇÕES.
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [HttpPut("Alterar")]
-        public async Task<IActionResult> AlterarCadastro(Usuario u)
-        {
-            try
-            {
-                int linhasAfetadas = await _usuariosRepository.AlterarCadastroAsync(u);
-                return Ok(linhasAfetadas);
-            }
-            catch (SqlException ex)
-            {
-                _logger.Error(ex);
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
-            catch (InvalidOperationException ex)
-            {
-                _logger.Error(ex);
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex);
-                return BadRequest(ex.Message);
-            }
-        }*/
-
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -294,7 +265,6 @@ namespace QuantoDemoraApi.Controllers
             }
         }
 
-        // O PROFESSOR LUIZ AINDA VAI ENSINAR A UTILIZAÇÃO DESSE RECURSO
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

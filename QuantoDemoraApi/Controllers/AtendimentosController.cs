@@ -18,9 +18,12 @@ namespace QuantoDemoraApi.Controllers
     {
         private static readonly ILog _logger = LogManager.GetLogger("Atendimentos Controller");
         private readonly IAtendimentosRepository _atendimentosRepository;
-        public AtendimentosController(IAtendimentosRepository atendimentosRepository)
+        private readonly IEspecialidadesRepository _especialidadesRepository;
+
+        public AtendimentosController(IAtendimentosRepository atendimentosRepository, IEspecialidadesRepository especialidadesRepository)
         {
             _atendimentosRepository = atendimentosRepository;
+            _especialidadesRepository = especialidadesRepository;
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -43,95 +46,36 @@ namespace QuantoDemoraApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [HttpGet("{hospitalId}/{especialidadeId}")]
-        public async Task<IActionResult> GetIdAsync(int hospitalId, int especialidadeId)
-        {
-            try
-            {
-                int tempoAtendimento = await _atendimentosRepository.GetByIdAsync(hospitalId, especialidadeId);
-                return Ok(tempoAtendimento);
-            }
-            catch (SqlException ex)
-            {
-                _logger.Error(ex);
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
-            catch (InvalidOperationException ex)
-            {
-                _logger.Error(ex);
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex);
-                return NotFound(ex.Message);
-            }
-        }
-
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet("{hospitalId}")]
-        public async Task<IActionResult> GetByHospitalIdAsync(int hospitalId)
+        public async Task<IActionResult> GetIdAsync(int hospitalId)
         {
             try
             {
-                List<Atendimento> lista = await _atendimentosRepository.GetByHospitalIdAsync(hospitalId);
+                List<Atendimento> lista = await _atendimentosRepository.GetAtendimentoByHospitalIdAsync(hospitalId);
+                List<Especialidade> listaEspecialidade = (List<Especialidade>)await _especialidadesRepository.GetAllAsync();
 
-                List<Especialidade> listaEspecialidade = new List<Especialidade>();
-
-                Especialidade especialidade1 = new Especialidade();                
-                int somaClinica = lista.Where(item => item.IdEspecialidade == 1).Sum(item => item.TempoAtendimento);
-                int qtdClinica = lista.Where(item => item.IdEspecialidade == 1).Count();
-                //decimal mediaClinica = 0;
-                //if (qtdClinica > 0)
-                //    mediaClinica = somaClinica / qtdClinica;
-
-                // Tentativa de "converter" o tempo de minutos para horas:
-                int mediaClinica = 0;
-                if (qtdClinica > 0)
+                foreach (Especialidade esp in listaEspecialidade)
                 {
-                    mediaClinica = somaClinica / qtdClinica;
-                    int hr = mediaClinica / 60;
-                    int min = mediaClinica % 60;
+                    int soma = lista.Where(item => item.IdEspecialidade == esp.IdEspecialidade).Sum(item => item.TempoAtendimento);
+                    int qtd = lista.Where(item => item.IdEspecialidade == esp.IdEspecialidade).Count();
+                    int media = 0;
 
-                    if (min < 10)
-                        especialidade1.TempoMedioConvertido = string.Format("{0}:0{1}", hr, min);
+                    if (qtd > 0)
+                    {
+                        media = soma / qtd;
+                        int hr = media / 60;
+                        int min = media % 60;
+
+                        if (min < 10)
+                            esp.TempoMedioConvertido = string.Format("{0}:0{1}", hr, min);
+                        else
+                            esp.TempoMedioConvertido =  string.Format("{0}:{1}", hr, min);
+                    }
                     else
-                        especialidade1.TempoMedioConvertido =  string.Format("{0}:{1}", hr, min);
+                    {
+                        esp.TempoMedioConvertido = "0:00";
+                    }                    
                 }
-                else
-                {
-                    especialidade1.TempoMedioConvertido = "0:00";
-                }
-
-                especialidade1.DsEspecialidade = "Clinica Medica";
-                especialidade1.TempoMedio = mediaClinica;
-                especialidade1.IdEspecialidade = 1;
-                listaEspecialidade.Add(especialidade1);
-
-
-                Especialidade especialidade2 = new Especialidade();
-                int somaOrto = lista.Where(item => item.IdEspecialidade == 2).Sum(item => item.TempoAtendimento);
-                int qtdOrto = lista.Where(item => item.IdEspecialidade == 2).Count();
-                decimal mediaOrto = 0;                
-                if(qtdOrto >0)
-                    mediaOrto = somaOrto / qtdOrto;                
-                especialidade2.DsEspecialidade = "Ortopedia e Traumatologia";
-                especialidade2.TempoMedio = mediaOrto;
-                especialidade2.IdEspecialidade = 2;
-                listaEspecialidade.Add(especialidade2);
-
-                Especialidade especialidade3 = new Especialidade();
-                int somaPediatria = lista.Where(item => item.IdEspecialidade == 3).Sum(item => item.TempoAtendimento);
-                int qtdPediatria = lista.Where(item => item.IdEspecialidade == 3).Count();
-                decimal mediaPediatria = 0;
-                if (qtdPediatria > 0)
-                    mediaPediatria = somaPediatria / qtdPediatria;
-                especialidade3.DsEspecialidade = "Pediatria";
-                especialidade3.TempoMedio = mediaPediatria;
-                especialidade3.IdEspecialidade = 3;
-                listaEspecialidade.Add(especialidade3);
 
                 return Ok(listaEspecialidade);
             }

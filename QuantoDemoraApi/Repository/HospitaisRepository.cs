@@ -1,5 +1,7 @@
 ﻿using log4net;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using QuantoDemoraApi.Data;
 using QuantoDemoraApi.Models;
 using QuantoDemoraApi.Repository.Interfaces;
@@ -40,6 +42,25 @@ namespace QuantoDemoraApi.Repository
                     throw new Exception("Hospital não encontrado, favor conferir o id informado.");
 
                 return hospital;
+            }
+            catch (Exception ex)
+            {
+                _logger.Info(ex);
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<Hospital>> GetByNameAsync(string nomeHospital)
+        {
+            try
+            {
+                List<Hospital> lista = await _context.Hospitais.ToListAsync();
+                var busca = lista.Where(x => x.NomeFantasia.ToLower().Contains(nomeHospital.ToLower()));
+
+                if (busca.IsNullOrEmpty())
+                    throw new Exception("Hospital não encontrado, favor conferir o nome informado.");
+
+                return busca;
             }
             catch (Exception ex)
             {

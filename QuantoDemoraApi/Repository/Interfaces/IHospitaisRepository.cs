@@ -6,5 +6,6 @@ namespace QuantoDemoraApi.Repository.Interfaces
     {
         Task<IEnumerable<Hospital>> GetAllAsync();
         Task<Hospital> GetByIdAsync(int hospitalId);
+        Task <IEnumerable<Hospital>> GetByNameAsync(string nomeHospital);
     }
 }

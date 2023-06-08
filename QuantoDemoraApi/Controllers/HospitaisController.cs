@@ -61,5 +61,33 @@ namespace QuantoDemoraApi.Controllers
                 return NotFound(ex.Message);
             }
         }
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [HttpGet("busca/{nomeHospital}")]
+        public async Task<ActionResult<IEnumerable<Hospital>>> GetNameAsync(string nomeHospital)
+        {
+            try
+            {
+                var lista = await _hospitaisRepository.GetByNameAsync(nomeHospital);
+                return Ok(lista);   
+            }
+            catch (SqlException ex)
+            {
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.Error(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+                return NotFound(ex.Message);
+            }
+        }
     }
 }

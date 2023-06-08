@@ -30,56 +30,15 @@ namespace QuantoDemoraApi.Repository
             }
         }
 
-        //public async Task<IEnumerable<Atendimento>> GetByIdAsync(int hospitalId, int especialidadeId)
-        public async Task<int> GetByIdAsync(int hospitalId, int especialidadeId)
+        public async Task<List<Atendimento>> GetAtendimentoByHospitalIdAsync(int hospitalId)
         {
             try
             {
-                //Atendimento atendimento = await _context.Atendimentos
-                //    .Include(h => h.Hospital)
-                //    .Include(e => e.Especialidade)
-                //    .FirstOrDefaultAsync(x => x.IdHospital == hospitalId);
-
-                //return atendimento;
-
-                int especialidade;
-
                 List<Atendimento> lista = await _context.Atendimentos
-                    .Where(x => x.IdHospital == hospitalId)
-                    .Where(x => x.IdEspecialidade == especialidadeId)
-                    .ToListAsync();
+                    .Where(x => x.IdHospital == hospitalId).ToListAsync();
 
                 if (lista.IsNullOrEmpty())
-                    throw new Exception("Hospital/Especialidade não encontrados, favor conferir o id informado.");
-
-                if (lista.Count > 0)
-                {
-                    if (hospitalId == 1 &&  especialidadeId == 1)
-                    {
-                        especialidade = lista.Count;
-                        return lista.Sum(x => x.TempoAtendimento) / especialidade;
-                    }
-                }
-
-                return 0;
-
-            }
-            catch (Exception ex)
-            {
-                _logger.Info(ex);
-                throw;
-            }
-        }
-
-
-        public async Task<List<Atendimento>> GetByHospitalIdAsync(int hospitalId)
-        {
-            try
-            {
-                List<Atendimento> lista = await _context.Atendimentos
-                    //.Include(h => h.Hospital)
-                    //.Include(e => e.Especialidade)
-                    .Where(x => x.IdHospital == hospitalId).ToListAsync();
+                    throw new Exception("Hospital não encontrado, favor conferir o id informado.");
 
                 return lista;                
             }
@@ -89,8 +48,6 @@ namespace QuantoDemoraApi.Repository
                 throw;
             }
         }
-
-
     }
 }
 
