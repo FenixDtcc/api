@@ -70,9 +70,12 @@ namespace QuantoDemoraApi.Controllers
                             esp.TempoMedioConvertido = string.Format("{0}:0{1}", hr, min);
                         else
                             esp.TempoMedioConvertido =  string.Format("{0}:{1}", hr, min);
+
+                        esp.TempoMedioMinutos = media;
                     }
                     else
                     {
+                        esp.TempoMedioMinutos = 0;
                         esp.TempoMedioConvertido = "0:00";
                     }                    
                 }

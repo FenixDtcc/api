@@ -11,7 +11,7 @@ namespace QuantoDemoraApi.Models
         public string DsEspecialidade { get; set; }
 
         [NotMapped]
-        public decimal TempoMedio { get; set; }
+        public decimal TempoMedioMinutos { get; set; }
         [NotMapped]
         public string TempoMedioConvertido { get; set; }
     }
