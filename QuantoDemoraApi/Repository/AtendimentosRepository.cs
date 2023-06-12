@@ -11,9 +11,11 @@ namespace QuantoDemoraApi.Repository
     {
         private static readonly ILog _logger = LogManager.GetLogger("Atendimentos Repository");
         private readonly DataContext _context;
-        public AtendimentosRepository(DataContext context)
+        private readonly IEspecialidadesRepository _especialidadesRepository;
+        public AtendimentosRepository(DataContext context, IEspecialidadesRepository especialidadesRepository)
         {
             _context = context;
+            _especialidadesRepository = especialidadesRepository;
         }
 
         public async Task<IEnumerable<Atendimento>> GetAllAsync()
@@ -30,17 +32,45 @@ namespace QuantoDemoraApi.Repository
             }
         }
 
-        public async Task<List<Atendimento>> GetAtendimentoByHospitalIdAsync(int hospitalId)
+        public async Task<List<Atendimento>> GetAtendimentoPorEspecialidadeByHospitalIdAsync(int hospitalId)
         {
             try
             {
-                List<Atendimento> lista = await _context.Atendimentos
+                List<Atendimento> listaAtendimento = await _context.Atendimentos
                     .Where(x => x.IdHospital == hospitalId).ToListAsync();
 
-                if (lista.IsNullOrEmpty())
+                List<Especialidade> listaEspecialidade = (List<Especialidade>)await _especialidadesRepository.GetAllAsync();
+
+                foreach (Especialidade esp in listaEspecialidade)
+                {
+                    int soma = listaAtendimento.Where(item => item.IdEspecialidade == esp.IdEspecialidade).Sum(item => item.TempoAtendimento);
+                    int qtd = listaAtendimento.Where(item => item.IdEspecialidade == esp.IdEspecialidade).Count();
+                    int media = 0;
+
+                    if (qtd > 0)
+                    {
+                        media = soma / qtd;
+                        int hr = media / 60;
+                        int min = media % 60;
+
+                        if (min < 10)
+                            esp.TempoMedioConvertido = string.Format("{0}:0{1}", hr, min);
+                        else
+                            esp.TempoMedioConvertido = string.Format("{0}:{1}", hr, min);
+
+                        esp.TempoMedioMinutos = media;
+                    }
+                    else
+                    {
+                        esp.TempoMedioMinutos = 0;
+                        esp.TempoMedioConvertido = "0:00";
+                    }
+                }
+
+                if (listaAtendimento.IsNullOrEmpty())
                     throw new Exception("Hospital não encontrado, favor conferir o id informado.");
 
-                return lista;                
+                return listaAtendimento;                
             }
             catch (Exception ex)
             {

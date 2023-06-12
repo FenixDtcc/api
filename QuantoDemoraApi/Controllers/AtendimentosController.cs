@@ -47,38 +47,12 @@ namespace QuantoDemoraApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet("{hospitalId}")]
-        public async Task<IActionResult> GetIdAsync(int hospitalId)
+        public async Task<IActionResult> GetAtendimentoPorEspecialidadeHospitalIdAsync(int hospitalId)
         {
             try
             {
-                List<Atendimento> lista = await _atendimentosRepository.GetAtendimentoByHospitalIdAsync(hospitalId);
-                List<Especialidade> listaEspecialidade = (List<Especialidade>)await _especialidadesRepository.GetAllAsync();
-
-                foreach (Especialidade esp in listaEspecialidade)
-                {
-                    int soma = lista.Where(item => item.IdEspecialidade == esp.IdEspecialidade).Sum(item => item.TempoAtendimento);
-                    int qtd = lista.Where(item => item.IdEspecialidade == esp.IdEspecialidade).Count();
-                    int media = 0;
-
-                    if (qtd > 0)
-                    {
-                        media = soma / qtd;
-                        int hr = media / 60;
-                        int min = media % 60;
-
-                        if (min < 10)
-                            esp.TempoMedioConvertido = string.Format("{0}:0{1}", hr, min);
-                        else
-                            esp.TempoMedioConvertido =  string.Format("{0}:{1}", hr, min);
-
-                        esp.TempoMedioMinutos = media;
-                    }
-                    else
-                    {
-                        esp.TempoMedioMinutos = 0;
-                        esp.TempoMedioConvertido = "0:00";
-                    }                    
-                }
+                var listaAtendimento = await _atendimentosRepository.GetAtendimentoPorEspecialidadeByHospitalIdAsync(hospitalId);
+                var listaEspecialidade = (List<Especialidade>)await _especialidadesRepository.GetAllAsync();
 
                 return Ok(listaEspecialidade);
             }
