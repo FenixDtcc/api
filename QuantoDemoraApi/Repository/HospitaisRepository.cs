@@ -54,13 +54,8 @@ namespace QuantoDemoraApi.Repository
         {
             try
             {
-                List<Hospital> lista = await _context.Hospitais.ToListAsync();
-                var busca = lista.Where(x => x.NomeFantasia.ToLower().Contains(nomeHospital.ToLower()));
-
-                if (busca.IsNullOrEmpty())
-                    throw new Exception("Hospital não encontrado, favor conferir o nome informado.");
-
-                return busca;
+                List<Hospital> lista = await _context.Hospitais.Where(x => x.NomeFantasia.ToLower().Contains(nomeHospital.ToLower())).ToListAsync();
+                return lista;
             }
             catch (Exception ex)
             {

@@ -67,9 +67,6 @@ namespace QuantoDemoraApi.Repository
                     }
                 }
 
-                if (listaAtendimento.IsNullOrEmpty())
-                    throw new Exception("Hospital não encontrado, favor conferir o id informado.");
-
                 return listaAtendimento;                
             }
             catch (Exception ex)
