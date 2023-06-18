@@ -7,7 +7,7 @@ using Microsoft.Data.SqlClient;
 
 namespace QuantoDemoraApi.Controllers
 {
-    // [Authorize] - Desabilitei para poder testar as requisições
+    [Authorize]
     [ApiController]
     [Route("[Controller]")]
     public class UsuariosController : ControllerBase

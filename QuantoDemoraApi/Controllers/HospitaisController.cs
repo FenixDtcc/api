@@ -3,9 +3,11 @@ using QuantoDemoraApi.Models;
 using log4net;
 using QuantoDemoraApi.Repository.Interfaces;
 using Microsoft.Data.SqlClient;
+using Microsoft.AspNetCore.Authorization;
 
 namespace QuantoDemoraApi.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[Controller]")]
     public class HospitaisController : ControllerBase
@@ -65,7 +67,7 @@ namespace QuantoDemoraApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [HttpGet("busca/{nomeHospital}")]
+        [HttpGet("Busca/{nomeHospital}")]
         public async Task<ActionResult<IEnumerable<Hospital>>> GetNameAsync(string nomeHospital)
         {
             try

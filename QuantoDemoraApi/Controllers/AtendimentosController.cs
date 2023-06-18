@@ -1,4 +1,5 @@
 using log4net;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using QuantoDemoraApi.Models;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace QuantoDemoraApi.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[Controller]")]
     public class AtendimentosController : ControllerBase
