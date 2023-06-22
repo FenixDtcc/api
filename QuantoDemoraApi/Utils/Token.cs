@@ -27,7 +27,7 @@ namespace QuantoDemoraApi.Utils
             SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddSeconds(600),
+                Expires = DateTime.UtcNow.AddHours(3.0),
                 SigningCredentials = creds
             };
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
