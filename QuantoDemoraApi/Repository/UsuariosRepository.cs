@@ -163,7 +163,7 @@ namespace QuantoDemoraApi.Repository
                 {
                     throw new Exception("Usuário não encontrado.");
                 }
-                if (!string.Equals(usuario.NomeUsuario, creds.NomeUsuario, StringComparison.InvariantCulture)) // Implementação para o case sensitive
+                else if (!string.Equals(usuario.NomeUsuario, creds.NomeUsuario, StringComparison.InvariantCulture)) // Implementação para o case sensitive
                 {
                     throw new Exception("Usuário não encontrado. Case sensitive!");
                 }
