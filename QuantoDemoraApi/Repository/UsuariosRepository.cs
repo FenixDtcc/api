@@ -156,12 +156,18 @@ namespace QuantoDemoraApi.Repository
             try
             {
                 Usuario usuario = await _context.Usuarios
-                    .FirstOrDefaultAsync(x => x.NomeUsuario.ToLower().Equals(creds.NomeUsuario.ToLower()));
+                    //.FirstOrDefaultAsync(x => x.NomeUsuario.ToLower().Equals(creds.NomeUsuario.ToLower())); // Login sem case sensitive no nome de usuario
+                    .FirstOrDefaultAsync(x => x.NomeUsuario == creds.NomeUsuario); // Login com case sensitive no nome de usuario
 
                 if (usuario == null)
                 {
                     throw new Exception("Usuário não encontrado.");
                 }
+                if (!string.Equals(usuario.NomeUsuario, creds.NomeUsuario, StringComparison.InvariantCulture)) // Implementação para o case sensitive
+                {
+                    throw new Exception("Usuário não encontrado. Case sensitive!");
+                }
+
                 else if (!Criptografia.VerificarPasswordHash(creds.PasswordString, usuario.PasswordHash, usuario.PasswordSalt))
                 {
                     throw new Exception("Senha incorreta.");
