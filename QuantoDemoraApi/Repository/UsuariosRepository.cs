@@ -107,11 +107,9 @@ namespace QuantoDemoraApi.Repository
 
         public async Task<Usuario> CadastrarAsync(Usuario u)
         {
-            Associado associado = new Associado();
-
             try
             {
-                associado = await _context.Associados.FirstOrDefaultAsync(x => x.Cpf.Replace(".", "").Replace("-", "")
+                Associado associado = await _context.Associados.FirstOrDefaultAsync(x => x.Cpf.Replace(".", "").Replace("-", "")
                                                                     .Equals(u.Cpf.Replace(".", "").Replace("-", "")));
 
                 if (associado == null)
